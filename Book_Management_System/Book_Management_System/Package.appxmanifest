@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="9c26d8cf-293c-4cee-bb9b-edb29ea07297"
-    Publisher="CN=merlin"
+    Name="89d39d38-63cd-4221-bf4d-7bb1981ca755"
+    Publisher="CN=立诚"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="9c26d8cf-293c-4cee-bb9b-edb29ea07297" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="89d39d38-63cd-4221-bf4d-7bb1981ca755" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Book_Management_System</DisplayName>
-    <PublisherDisplayName>merlin</PublisherDisplayName>
+    <PublisherDisplayName>立诚</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
