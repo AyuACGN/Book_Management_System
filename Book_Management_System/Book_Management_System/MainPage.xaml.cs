@@ -25,7 +25,6 @@ namespace Book_Management_System
         public MainPage()
         {
             this.InitializeComponent();
-            int a = 0;
         }
     }
 }
