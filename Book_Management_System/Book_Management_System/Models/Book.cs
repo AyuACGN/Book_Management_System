@@ -2,82 +2,34 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Book_Management_System.Models
 {
-    class Book
+    class Book : INotifyPropertyChanged
     {
-        // 每本书有唯一的ID
-        // 这个ID应该可以和读者ID重复
-        // 这个ID用来检索图书
-        private int _ID;
-        public int ID
-        {
-            get
-            {
-                return _ID;
-            }
-            set
-            {
-                _ID = value;
-            }
-        }
 
-        private string _name;
-        public string name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
-        }
+        public string id;
 
-        private string _author;
-        public string author
-        {
-            get
-            {
-                return _author;
-            }
-            set
-            {
-                _author = value;
-            }
-        }
+        private string _title;
 
-        private string _publisher;
-        public string publisher
+        public string title
         {
             get
             {
-                return _publisher;
+                return _title;
             }
             set
             {
-                _publisher = value;
-            }
-        }
-
-        private string _isbn;
-        public string isbn
-        {
-            get
-            {
-                return _isbn;
-            }
-            set
-            {
-                _isbn = value;
+                _title = value;
+                OnPropertyChanged();
             }
         }
 
         private string _description;
+
         public string description
         {
             get
@@ -87,24 +39,56 @@ namespace Book_Management_System.Models
             set
             {
                 _description = value;
+                OnPropertyChanged();
             }
         }
 
-        // 新增图书时默认为Returned状态
-        // 图书借出时更改为Borrowed状态
-        // 图书归还时更改为Returned状态
-        // 对图书进行操作是需要判断图书处于什么状态
-        public enum Status { Borrowed, Returned }
-        private Status _status;
-        public Status status
+        private DateTime _datetime;
+
+        public DateTime datetime
         {
             get
             {
-                return _status;
+                return _datetime;
             }
             set
             {
-                _status = value;
+                _datetime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _bookNumber;
+
+        public string bookNumber
+        {
+            get
+            {
+                return _bookNumber;
+            }
+            set
+            {
+                _bookNumber = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Book(string title, string description, DateTime date, string booknumber)
+        {
+            this.id = Guid.NewGuid().ToString();
+            this.title = title;
+            this.description = description;
+            this.datetime = date;
+            this.bookNumber = booknumber;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName]string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }

@@ -1,8 +1,14 @@
-﻿using System;
+﻿using SQLitePCL;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
 
 /// <summary>
 /// 0.首页 MainPage
@@ -22,5 +28,153 @@ namespace Book_Management_System.ViewModels
 {
     class ManagementViewModels
     {
+        private ObservableCollection<Models.Book> allbooks = new ObservableCollection<Models.Book>();
+        public ObservableCollection<Models.Book> Allbooks { get { return this.allbooks; } }
+
+        private Models.Book selectedItem = default(Models.Book);
+        private SQLiteConnection conn;
+
+        public Models.Book SelectedItem { get { return selectedItem; } set { this.selectedItem = value; } }
+
+        public ManagementViewModels()
+        {
+            this.loadDatabase();
+            this.initData();
+        }
+
+        private void loadDatabase()
+        {
+            conn = new SQLiteConnection("bs.db");
+            string sql = @"CREATE TABLE IF NOT EXISTS
+                             BookItem (Id VARCHAR(140) PRIMARY KEY,Title VARCHAR(140),Description VARCHAR(140),Date VARCHAR(140), BookNumber VARCHAR(140))";
+            using (var statement = conn.Prepare(sql))
+            {
+                statement.Step();
+            }
+
+            string usrList = @"CREATE TABLE IF NOT EXISTS
+                             UserList (Name VARCHAR(140) PRIMARY KEY,Password VARCHAR(140),authority VARCHAR(140))";
+
+            using (var statement1 = conn.Prepare(usrList))
+            {
+                statement1.Step();
+            }
+
+            string borrowbooklist = @"CREATE TABLE IF NOT EXISTS
+                             BorrowHistory (UserName VARCHAR(140),BookName VARCHAR(140),Date VARCHAR(140))";
+            using (var statement2 = conn.Prepare(borrowbooklist))
+            {
+                statement2.Step();
+            }
+
+            string returnbooklist = @"CREATE TABLE IF NOT EXISTS
+                             ReturnHistory (UserName VARCHAR(140),BookName VARCHAR(140),Date VARCHAR(140))";
+            using (var statement3 = conn.Prepare(returnbooklist))
+            {
+                statement3.Step();
+            }
+        } // 加载数据库，先链接数据库，如果表不存在，则创建新表
+
+        private void initData()
+        {
+            var db = conn;
+            try
+            {
+                using (var statement = db.Prepare("SELECT Id,Title,Description,Date,BookNumber FROM BookItem"))
+                {
+                    while (SQLiteResult.ROW ==statement.Step())
+                    {
+                        Models.Book newOne;
+                        newOne = new Models.Book((string)statement[1], (string)statement[2], Convert.ToDateTime((string)statement[3]), (string)statement[4]);
+                        newOne.id = (string)statement[0];
+                        this.allbooks.Add(newOne);
+                    }
+                }
+                using (var statement = db.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
+                {
+                    statement.Bind(1, "admin");
+                    if (SQLiteResult.ROW != statement.Step())
+                    {
+                        using (var ad = db.Prepare("INSERT INTO UserList (Name, Password, authority) VALUES (?, ?, ?)"))
+                        {
+                            ad.Bind(1, "admin");
+                            ad.Bind(2, "admin");
+                            ad.Bind(3, "2");
+                            ad.Step();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var i = new MessageDialog(ex.ToString()).ShowAsync();
+            }
+        } // 初始化数据，读取当前本地存储的所有图书数据，加入一个管理员账号
+
+        public int login(string username, string password)
+        {
+            var db = conn;
+            using (var statement = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
+            {
+                statement.Bind(1, username);
+                if (SQLiteResult.ROW != statement.Step())
+                {
+                    var i = new MessageDialog("This account has not been signed up!").ShowAsync();
+                    return 0;
+                }
+            }
+            using (var statement = conn.Prepare("SELECT authority FROM UserList WHERE Name = ? AND Password = ?"))
+            {
+                statement.Bind(1, username);
+                statement.Bind(2, password);
+                if (SQLiteResult.ROW == statement.Step())
+                {
+                    int a = int.Parse((string)statement[0]);
+                    if (a == 1)
+                    {
+                        return 1;
+                    }
+                    else if (a == 2)
+                    {
+                        return 2;
+                    }
+                }
+                else
+                {
+                    var i = new MessageDialog("Wrong password!").ShowAsync();
+                    return 0;
+                }
+            }
+            return 0;
+        }
+
+        public void AddUser(string username, string password)
+        {
+            var db = conn;
+            using (var statement = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
+            {
+                statement.Bind(1, username);
+                if (SQLiteResult.ROW == statement.Step())
+                {
+                    var i = new MessageDialog("This account has been signed up!").ShowAsync();
+                    return;
+                }
+            }
+            try
+            {
+                using (var userItem = db.Prepare("INSERT INTO UserList (Name,Password,Authority) VALUES (?, ?, ?)"))
+                {
+                    userItem.Bind(1, username);
+                    userItem.Bind(2, password);
+                    userItem.Bind(3, "1");
+                    userItem.Step();
+                    var i = new MessageDialog("Success!").ShowAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                var i = new MessageDialog(ex.ToString()).ShowAsync();
+            }
+        } // 用户注册 写入数据库
     }
 }
