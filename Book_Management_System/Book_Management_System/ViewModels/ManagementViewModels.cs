@@ -80,6 +80,7 @@ namespace Book_Management_System.ViewModels
             var db = conn;
             try
             {
+                // 初始化数据，读取当前本地存储的所有图书数据
                 using (var statement = db.Prepare("SELECT Id,Title,Description,Date,BookNumber FROM BookItem"))
                 {
                     while (SQLiteResult.ROW ==statement.Step())
@@ -90,6 +91,8 @@ namespace Book_Management_System.ViewModels
                         this.allbooks.Add(newOne);
                     }
                 }
+
+                // 加入管理员账号
                 using (var statement = db.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
                 {
                     statement.Bind(1, "admin");
@@ -109,11 +112,13 @@ namespace Book_Management_System.ViewModels
             {
                 var i = new MessageDialog(ex.ToString()).ShowAsync();
             }
-        } // 初始化数据，读取当前本地存储的所有图书数据，加入一个管理员账号
+        }
 
         public int login(string username, string password)
         {
             var db = conn;
+
+            // 检查用户是否存在
             using (var statement = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
             {
                 statement.Bind(1, username);
@@ -123,6 +128,8 @@ namespace Book_Management_System.ViewModels
                     return 0;
                 }
             }
+
+            // 检查用户名密码是否匹配，检测用户的权限
             using (var statement = conn.Prepare("SELECT authority FROM UserList WHERE Name = ? AND Password = ?"))
             {
                 statement.Bind(1, username);
@@ -146,11 +153,13 @@ namespace Book_Management_System.ViewModels
                 }
             }
             return 0;
-        }
+        } // 登陆函数
 
         public void AddUser(string username, string password)
         {
             var db = conn;
+
+            // 检查用户名是否被注册
             using (var statement = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
             {
                 statement.Bind(1, username);
@@ -160,6 +169,7 @@ namespace Book_Management_System.ViewModels
                     return;
                 }
             }
+            // 将创建的用户信息写入数据库
             try
             {
                 using (var userItem = db.Prepare("INSERT INTO UserList (Name,Password,Authority) VALUES (?, ?, ?)"))
@@ -175,6 +185,245 @@ namespace Book_Management_System.ViewModels
             {
                 var i = new MessageDialog(ex.ToString()).ShowAsync();
             }
-        } // 用户注册 写入数据库
+        }
+
+        // 加入新的书目
+        public void AddBook(string title, string description, DateTime a, string booknumber)
+        {
+            Models.Book newOne;
+            newOne = new Models.Book(title, description, a, booknumber);
+            this.allbooks.Add(newOne);
+
+            var db = conn;
+            try
+            {
+                using (var todoItem = db.Prepare("INSERT INTO BookItem (Id, Title, Description, Date, BookNumber) VALUES (?, ?, ?, ?, ?)"))
+                {
+                    todoItem.Bind(1, newOne.id);
+                    todoItem.Bind(2, title);
+                    todoItem.Bind(3, description);
+                    todoItem.Bind(4, a.ToString());
+                    todoItem.Bind(5, booknumber);
+                    todoItem.Step();
+                }
+            }
+            catch (Exception ex)
+            {
+                var i = new MessageDialog(ex.ToString()).ShowAsync();
+            }
+        }
+
+        // 删除书目
+        public void RemoveBook(Models.Book item)
+        {
+            using (var statement = conn.Prepare("DELETE FROM BookItem WHERE Id = ?"))
+            {
+                statement.Bind(1, item.id);
+                statement.Step();
+            }
+            // DIY
+            this.Allbooks.Remove(item);
+            // set selectedItem to null after remove
+            this.selectedItem = null;
+        }
+
+        // 更新书本信息
+        public void UpdateBook(string title, string description, DateTime datetime, string booknumber)
+        {
+            // var existTodoItem = getTodoItem(this.selectedItem.id);
+
+            if (this.selectedItem != null)
+            {
+                using (var todoitem = conn.Prepare("UPDATE BookItem SET Title = ?, Description = ?, Date = ?, BookNumber = ? WHERE Id = ?"))
+                {
+                    todoitem.Bind(1, title);
+                    todoitem.Bind(2, description);
+                    todoitem.Bind(3, datetime.ToString());
+                    todoitem.Bind(4, booknumber);
+                    todoitem.Bind(5, selectedItem.id);
+                    todoitem.Step();
+                }
+            }
+            this.selectedItem.title = title;
+            this.selectedItem.description = description;
+            this.selectedItem.datetime = datetime;
+            this.selectedItem.bookNumber = booknumber;
+
+            this.selectedItem = null;
+        }
+
+        // 查询书本信息
+        public void QueryBook(string text)
+        {
+            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ? OR Description = ? OR Date = ?"))
+            {
+                statement.Bind(1, text);
+                statement.Bind(2, text);
+                statement.Bind(3, text);
+                StringBuilder str = new StringBuilder();
+                str.Length = 0;
+                while (SQLiteResult.ROW == statement.Step())
+                {
+                    str.Append("Title:");
+                    str.Append((string)statement[0]);
+                    str.Append("  Description:");
+                    str.Append((string)statement[1]);
+                    str.Append("  Book Number:");
+                    str.Append((string)statement[3]);
+                    str.Append("\n");
+                }
+                if (str.Length == 0)
+                {
+                    var i = new MessageDialog("No result!").ShowAsync();
+                }
+                else
+                {
+                    var i = new MessageDialog(str.ToString()).ShowAsync();
+                }
+            }
+        }
+
+        public void AddBorrowRecord(string username, string bookname, DateTime a)
+        {
+            var db = conn;
+            try
+            {
+                using (var borrowItem = db.Prepare("INSERT INTO BorrowHistory (UserName, BookName, Date) VALUES (?, ?, ?)"))
+                {
+                    borrowItem.Bind(1, username);
+                    borrowItem.Bind(2, bookname);
+                    borrowItem.Bind(3, a.ToString());
+                    borrowItem.Step();
+                }
+            }
+            catch (Exception ex)
+            {
+                var i = new MessageDialog(ex.ToString()).ShowAsync();
+            }
+        } // 添加借书记录
+
+        public void AddReturnRecord(string username, string bookname, DateTime a)
+        {
+            var db = conn;
+            try
+            {
+                using (var returnItem = db.Prepare("INSERT INTO ReturnHistory (UserName, BookName, Date) VALUES (?, ?, ?)"))
+                {
+                    returnItem.Bind(1, username);
+                    returnItem.Bind(2, bookname);
+                    returnItem.Bind(3, a.ToString());
+                    returnItem.Step();
+                }
+            }
+            catch (Exception ex)
+            {
+                var i = new MessageDialog(ex.ToString()).ShowAsync();
+            }
+        } // 添加还书记录
+
+        public void borrowBook(string bookname, string username, DateTime a)
+        {
+            using (var sss = conn.Prepare("SELECT UserName FROM BorrowHistory WHERE UserName = ? AND BookName = ?"))
+            {
+                sss.Bind(1, username);
+                sss.Bind(2, bookname);
+                if (SQLiteResult.ROW == sss.Step())
+                {
+                    var i = new MessageDialog("You have borrowed this book!").ShowAsync();
+                    return;
+                }
+            }
+            using (var sss = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
+            {
+                sss.Bind(1, username);
+                if (SQLiteResult.ROW != sss.Step())
+                {
+                    var i = new MessageDialog("No this user!").ShowAsync();
+                    return;
+                }
+            }
+            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
+            {
+                StringBuilder str = new StringBuilder();
+                str.Length = 0;
+                statement.Bind(1, bookname);
+                if (SQLiteResult.ROW == statement.Step())
+                {
+                    if (int.Parse((string)statement[3]) < 1)
+                    {
+                        var i = new MessageDialog("This book is out of loan").ShowAsync();
+                    }
+                    else
+                    {
+                        int k = int.Parse((string)statement[3]) - 1;
+                        AddBorrowRecord(username, bookname, a);
+                        var i = new MessageDialog("Sucess!").ShowAsync();
+                        using (var sta = conn.Prepare("UPDATE BookItem SET BookNumber = ? WHERE Title = ?"))
+                        {
+                            sta.Bind(1, k.ToString());
+                            sta.Bind(2, bookname);
+                            sta.Step();
+                        }
+                    }
+                }
+                else
+                {
+                    var i = new MessageDialog("There is no this book").ShowAsync();
+                }
+            }
+        } // 完整借书流程
+
+        public void returnBook(string bookname, string username, DateTime a)
+        {
+            using (var sss = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
+            {
+                sss.Bind(1, username);
+                if (SQLiteResult.ROW != sss.Step())
+                {
+                    var i = new MessageDialog("No this user!").ShowAsync();
+                    return;
+                }
+            }
+            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
+            {
+                StringBuilder str = new StringBuilder();
+                str.Length = 0;
+                statement.Bind(1, bookname);
+                if (SQLiteResult.ROW == statement.Step())
+                {
+                    using (var std = conn.Prepare("SELECT BookName FROM BorrowHistory WHERE BookName = ? And UserName = ? "))
+                    {
+                        std.Bind(1, bookname);
+                        std.Bind(2, username);
+                        if (SQLiteResult.ROW != std.Step())
+                        {
+                            var i = new MessageDialog("You have not borrowed this book!").ShowAsync();
+                        }
+                        else
+                        {
+                            int k = int.Parse((string)statement[3]) + 1;
+                            AddReturnRecord(username, bookname, a);
+                            var i = new MessageDialog("Sucess!").ShowAsync();
+                            using (var sta = conn.Prepare("UPDATE BookItem SET BookNumber = ? WHERE Title = ?"))
+                            {
+                                sta.Bind(1, k.ToString());
+                                sta.Bind(2, bookname);
+                                sta.Step();
+                            }
+                            using (var sta = conn.Prepare("DELETE FROM BorrowHistory WHERE BookName = ? AND UserName = ?"))
+                            {
+                                sta.Bind(1, bookname);
+                                sta.Bind(2, username);
+                                sta.Step();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var i = new MessageDialog("There is no this book").ShowAsync();
+                }
+            }
+        } // 完整还书流程
     }
 }

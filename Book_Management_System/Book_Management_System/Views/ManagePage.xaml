@@ -8,7 +8,33 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Page.BottomAppBar>
+        <CommandBar>
+        </CommandBar>
+    </Page.BottomAppBar>
 
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <RelativePanel Grid.Row="0">
+            <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}">Manage request for books</TextBlock>
+        </RelativePanel>
+
+        <Grid Grid.Row="1">
+            <ScrollViewer>
+                <StackPanel>
+                    <TextBox x:Name="BookName" Width="350" Header="Book Name" Margin="0,12,0,0" />
+                    <TextBox x:Name="UserName" Width="350" Margin="0,12,0,0" Header="User Name" />
+                    <DatePicker x:Name="date" Width="350" Margin="0,12,0,0" Header="Due Date" HorizontalAlignment="Center" />
+                    <RelativePanel Width="350" Margin="0,24,0,0">
+                        <Button x:Name="borrowButton" Content="借书" HorizontalAlignment="Left" Width="63" Click="borrowButton_Click"/>
+                        <Button x:Name="returnButton" Content="还书" RelativePanel.AlignRightWithPanel="True" Click="returnButton_Click"/>
+                    </RelativePanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>
