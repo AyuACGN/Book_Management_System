@@ -76,7 +76,7 @@ namespace Book_Management_System.Views
         private void Search_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
             var conn = new SQLiteConnection("BookManageSystem.db");
-            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM TodoItem WHERE Title = ?"))
+            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
             {
                 statement.Bind(1, Search.QueryText);
                 StringBuilder str = new StringBuilder();
