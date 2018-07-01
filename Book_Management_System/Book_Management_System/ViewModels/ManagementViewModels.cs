@@ -44,7 +44,7 @@ namespace Book_Management_System.ViewModels
 
         private void loadDatabase()
         {
-            conn = new SQLiteConnection("bs.db");
+            conn = new SQLiteConnection("BookManageSystem.db");
             string sql = @"CREATE TABLE IF NOT EXISTS
                              BookItem (Id VARCHAR(140) PRIMARY KEY,Title VARCHAR(140),Description VARCHAR(140),Date VARCHAR(140), BookNumber VARCHAR(140))";
             using (var statement = conn.Prepare(sql))
@@ -425,5 +425,34 @@ namespace Book_Management_System.ViewModels
                 }
             }
         } // 完整还书流程
+
+        public string AdminHistory(string bookname)
+        {
+            using (var statement = conn.Prepare("SELECT Title FROM BookItem WHERE Title = ?"))
+            {
+                statement.Bind(1, bookname);
+                if (SQLiteResult.ROW != statement.Step())
+                {
+                    var i = new MessageDialog("There is no this book!").ShowAsync();
+                    return "error";
+                }
+            }
+            using (var statement = conn.Prepare("SELECT BookName,UserName,Date FROM BorrowHistory WHERE BookName = ?"))
+            {
+                statement.Bind(1, bookname);
+                StringBuilder str = new StringBuilder();
+                str.Length = 0;
+                str.Append("UserName      Date");
+                str.Append("\r\n");
+                while (SQLiteResult.ROW == statement.Step())
+                {
+                    str.Append((string)statement[1]);
+                    str.Append("             ");
+                    str.Append((string)statement[2]);
+                    str.Append("\r\n");
+                }
+                return str.ToString();
+            }
+        } // 管理员查看书本借阅历史
     }
 }
