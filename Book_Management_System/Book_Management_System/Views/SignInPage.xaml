@@ -8,7 +8,26 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="gd_backimage">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
+        <RelativePanel HorizontalAlignment="Center" Grid.Row="0">
+            <TextBlock x:Name="Title" HorizontalAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" RenderTransformOrigin="5.134,0.437">Sing In</TextBlock>
+        </RelativePanel>
+
+        <Grid Grid.Row="1" VerticalAlignment="Center">
+            <ScrollViewer>
+                <StackPanel>
+                    <TextBox x:Name="UserName" Width="350" Header="User Name" PlaceholderText="Entern your username" Margin="0,12,0,0" />
+                    <PasswordBox x:Name="Password" Width="350" Margin="0,12,0,0" Header="Password" PlaceholderText="Enter your password" />
+                    <RelativePanel Width="350">
+                        <Button x:Name="signinButton" Content="signin" Width="80" Margin="270, 0, 0, 0" Click="signinButton_Click"/>
+                    </RelativePanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Page>

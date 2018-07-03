@@ -16,6 +16,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Book_Management_System.ViewModels;
+using Book_Management_System.Models;
+using Windows.UI.Core;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -32,7 +35,7 @@ namespace Book_Management_System.Views
     {
         DataTransferManager dataTransferManager;
 
-        public string user;
+        User user = new User();
 
         public UserInfoPage()
         {
@@ -43,6 +46,11 @@ namespace Book_Management_System.Views
 
             dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
+
+            UserName.PlaceholderText = "Original username: " + user.username;
+            Password.PlaceholderText = "Enter your new password";
+            Phone.PlaceholderText = "Original phone: " + user.phone;
+            Email.PlaceholderText = "Original email: " + user.email;
         }
 
         private ViewModels.ManagementViewModels ViewModel;
@@ -58,21 +66,99 @@ namespace Book_Management_System.Views
             deferral.Complete();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public void modifyButton_Click(object sender, RoutedEventArgs e)
         {
-            user = (string)e.Parameter;
-            UserName.Text = user;
+            if (UserName.Text == "")
+            {
+                var i = new MessageDialog("Please enter your username!").ShowAsync();
+                return;
+            }
+            if (Password.Password == "")
+            {
+                var i = new MessageDialog("Please enter your password!").ShowAsync();
+                return;
+            }
+            if (Password.Password.Length < 8)
+            {
+                var i = new MessageDialog("Your password must longer than 8 characters!").ShowAsync();
+                return;
+            }
+            if (Phone.Text.Length != 11)
+            {
+                var i = new MessageDialog("Your phone must be 11 numbers!").ShowAsync();
+                return;
+            }
+            if (Email.Text == "")
+            {
+                var i = new MessageDialog("Please enter your email!").ShowAsync();
+                return;
+            }
+            Frame.Navigate(typeof(UserPage));
         }
 
-        private void modifyButton_Click(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var conn = new SQLiteConnection("BookManageSystem.db");
-            using (var statement = conn.Prepare("UPDATE UserList SET Password = ? WHERE Name = ?"))
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            if (rootFrame.CanGoBack)
             {
-                statement.Bind(1, Password.Text);
-                statement.Bind(2, user);
-                statement.Step();
-                var i = new MessageDialog("Success!").ShowAsync();
+                // Show UI in title bar if opted-in and in-app backstack is not empty.
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Visible;
+            }
+            else
+            {
+                // Remove the UI from the title bar if in-app back stack is empty.
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Collapsed;
+            }
+        }
+
+        private void Password_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (user.valid_passwardAsync(Password.Password))
+            {
+                password_status.Text = "valid";
+            }
+            else
+            {
+                password_status.Text = "invalid";
+            }
+        }
+
+        private void Phone_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (user.Valid_usernameAsync(Phone.Text.ToString()))
+            {
+                phone_status.Text = "valid";
+            }
+            else
+            {
+                phone_status.Text = "invalid";
+            }
+        }
+
+        private void UserName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (user.Valid_usernameAsync(UserName.Text.ToString()))
+            {
+                username_status.Text = "valid";
+            }
+            else
+            {
+                username_status.Text = "invalid";
+            }
+        }
+
+        private void Email_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (user.valid_emailAsync(Email.Text.ToString()))
+            {
+                email_status.Text = "valid";
+            }
+            else
+            {
+                email_status.Text = "invalid";
             }
         }
     }

@@ -57,7 +57,7 @@ namespace Book_Management_System.Models
                 OnPropertyChanged();
             }
         }
-
+        
         private string _bookNumber;
 
         public string bookNumber
