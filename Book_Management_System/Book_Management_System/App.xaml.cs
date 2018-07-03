@@ -95,6 +95,8 @@ namespace Book_Management_System
                     }
                 };
             }
+
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
         }
 
         /// <summary>

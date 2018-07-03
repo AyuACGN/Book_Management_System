@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 
 namespace Book_Management_System.Models
 {
@@ -90,6 +91,51 @@ namespace Book_Management_System.Models
             {
                 _authority = value;
             }
+        }
+
+        public bool Valid_usernameAsync(string username)
+        {
+            if (username == "")
+            {
+                // var i = new MessageDialog("Please input your username!").ShowAsync();
+                return false;
+            }
+            return true;
+        }
+
+        public bool valid_passwardAsync(string passward)
+        {
+            if (passward == "")
+            {
+                // var i = new MessageDialog("Please input your passward!").ShowAsync();
+                return false;
+            }
+            if (passward.Length < 8)
+            {
+                // var i = new MessageDialog("Passward must longer than 8 characters!").ShowAsync();
+                return false;
+            }
+            return true;
+        }
+
+        public bool valid_phoneAsync(string phone)
+        {
+            if (phone.Length != 11)
+            {
+                // var i = new MessageDialog("Please input you 11 characters phone number!").ShowAsync();
+                return false;
+            }
+            return true;
+        }
+
+        public bool valid_emailAsync(string email)
+        {
+            if (email == "")
+            {
+                // var i = new MessageDialog("Please input your email!").ShowAsync();
+                return false;
+            }
+            return true;
         }
     }
 }
