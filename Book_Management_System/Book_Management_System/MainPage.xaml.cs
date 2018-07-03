@@ -68,12 +68,12 @@ namespace Book_Management_System
 
         private void signupButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(SignUpPage));
+            Frame.Navigate(typeof(SignUpPage), ViewModel);
         }
 
         private void signinButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(SignInPage));
+            Frame.Navigate(typeof(SignInPage), ViewModel);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

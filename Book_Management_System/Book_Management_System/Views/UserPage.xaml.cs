@@ -75,7 +75,7 @@ namespace Book_Management_System.Views
 
         private void Search_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
-            var conn = new SQLiteConnection("BookManageSystem.db");
+            var conn = new SQLiteConnection("BMSS.db");
             using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
             {
                 statement.Bind(1, Search.QueryText);
@@ -104,7 +104,7 @@ namespace Book_Management_System.Views
 
         private void searchHis_Click(object sender, RoutedEventArgs e)
         {
-            var conn = new SQLiteConnection("BookManageSystem.db");
+            var conn = new SQLiteConnection("BMSS.db");
             int q = 0;
             using (var statement = conn.Prepare("SELECT BookName,Date FROM ReturnHistory WHERE UserName = ?"))
             {
