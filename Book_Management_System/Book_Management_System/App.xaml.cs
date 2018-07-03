@@ -58,7 +58,7 @@ namespace Book_Management_System
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                    //TODO: 从之前挂起的应用程序加载状态
+                    //从之前挂起的应用程序加载状态
                 }
 
                 // 将框架放在当前窗口中
@@ -76,6 +76,24 @@ namespace Book_Management_System
                 }
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
+
+                // register a global listener for the BackRequested event
+                // You can register for this event in each page if you want to exclude specific pages from back navigation, 
+                // or you want to execute page-level code before displaying the page.
+                Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+
+                rootFrame.Navigated += (s, a) =>
+                {
+                    if (rootFrame.CanGoBack)
+                    {
+                        // Setting this visible is ignored on Mobile and when in tablet mode!     
+                        Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Visible;
+                    }
+                    else
+                    {
+                        Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
+                    }
+                };
             }
 
             Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;

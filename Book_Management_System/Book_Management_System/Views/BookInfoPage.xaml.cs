@@ -129,7 +129,7 @@ namespace Book_Management_System.Views
             {
                 ViewModel.UpdateBook(title.Text, description.Text, date.Date.DateTime, bookNumber.Text);
                 
-                Frame.Navigate(typeof(MainPage), ViewModel);
+                Frame.Navigate(typeof(AdminPage), ViewModel);
             }
         } // completed
 
