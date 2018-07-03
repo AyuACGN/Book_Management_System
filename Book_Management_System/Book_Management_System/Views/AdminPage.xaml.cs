@@ -69,35 +69,17 @@ namespace Book_Management_System.Views
 
         private void TodoItem_ItemClicked(object sender, ItemClickEventArgs e)
         {
-            if (ActualWidth < 800)
-            {
-                ViewModel.SelectedItem = (Models.Book)(e.ClickedItem);
-                Frame.Navigate(typeof(BookInfoPage), ViewModel);
-            }
-            else if (ActualWidth > 800)
-            {
-                ViewModel.SelectedItem = (Models.Book)(e.ClickedItem);
-                _Title.Text = ViewModel.SelectedItem.title;
-                Details.Text = ViewModel.SelectedItem.description;
-                date.Date = ViewModel.SelectedItem.datetime;
-                KeyButton.Content = "Update";
-            }
+            ViewModel.SelectedItem = (Models.Book)(e.ClickedItem);
+            Frame.Navigate(typeof(BookInfoPage), ViewModel);
+            
         } // completed
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.SelectedItem = null;
-            if (ActualWidth < 800)
-            {
-                this.Frame.Navigate(typeof(BookInfoPage), ViewModel);
-            }
-            else if (ActualWidth > 800)
-            {
-                _Title.Text = "";
-                Details.Text = "";
-                date.Date = DateTime.Now.Date;
-                KeyButton.Content = "Create";
-            }
+            
+            this.Frame.Navigate(typeof(BookInfoPage), ViewModel);
+            
         } // completed
 
         private void KeyButton_Click(object sender, RoutedEventArgs e)
