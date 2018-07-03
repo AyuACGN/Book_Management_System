@@ -8,7 +8,25 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
+        <RelativePanel Grid.Row="0">
+            <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}">Book Manage System for User</TextBlock>
+            <SearchBox x:Name="Search" Width="200" Height="40" RelativePanel.AlignRightWithPanel="True" Margin="0,18,10,0" QuerySubmitted="Search_QuerySubmitted" />
+        </RelativePanel>
+
+        <RelativePanel Grid.Row="1">
+            <TextBlock x:Name="his" Width="500" Height="350" RelativePanel.AlignHorizontalCenterWithPanel="True" ></TextBlock>
+        </RelativePanel>
+
+        <RelativePanel Grid.Row="2" Width="350" Margin="0,24,0,0">
+            <Button x:Name="searchHis" Content="History" HorizontalAlignment="Left" Width="63" Click="searchHis_Click"/>
+            <Button x:Name="modify" Content="modify" RelativePanel.AlignRightWithPanel="True" Click="modify_Click"/>
+        </RelativePanel>
     </Grid>
 </Page>
