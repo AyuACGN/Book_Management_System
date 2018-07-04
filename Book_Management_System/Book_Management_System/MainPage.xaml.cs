@@ -59,8 +59,8 @@ namespace Book_Management_System
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
-            dp.Properties.Title = ViewModel.SelectedItem.title;
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
+            dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
@@ -80,18 +80,7 @@ namespace Book_Management_System
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
-            if (rootFrame.CanGoBack)
-            {
-                // Show UI in title bar if opted-in and in-app backstack is not empty.
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                    AppViewBackButtonVisibility.Visible;
-            }
-            else
-            {
-                // Remove the UI from the title bar if in-app back stack is empty.
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                    AppViewBackButtonVisibility.Collapsed;
-            }
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
     }
 }

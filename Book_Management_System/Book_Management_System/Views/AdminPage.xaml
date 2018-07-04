@@ -8,6 +8,10 @@
     xmlns:md="using:Book_Management_System.Models"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <local:DateToStringConverter x:Key="Converter1"/>
+    </UserControl.Resources>
+
     <Page.BottomAppBar>
         <CommandBar>
             <AppBarButton x:Name="Add" Icon="Add" Label="Add" Click="Add_Click" />
@@ -42,10 +46,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <RelativePanel Grid.Row="0">
+        <RelativePanel Grid.Row="0" HorizontalAlignment="Center">
             <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}">Book Manage System for Admin</TextBlock>
-            <SearchBox x:Name="Search" Width="200" Height="40" RelativePanel.AlignRightWithPanel="True" Margin="0,18,10,0" QuerySubmitted="SearchBox_QuerySubmitted" />
         </RelativePanel>
+
+        <Grid Width="200" Height="80" HorizontalAlignment="Right" Margin="0, 100, 0, 0">
+            <SearchBox x:Name="Search" Width="200" Height="40"  QuerySubmitted="SearchBox_QuerySubmitted" />
+        </Grid>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -59,7 +66,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="md:Book">
                             <UserControl>
-                                <Grid Height="100">
+                                <Grid Height="100" Width="800">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="state1">
                                             <VisualState>
@@ -85,15 +92,15 @@
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Image x:Name="image" Grid.Column="1" Source="Assets/background.jpg" Height="90" Width="90" Margin="0,3,12,7"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding Path=title}" VerticalAlignment="Center" Foreground="Black" FontWeight="Normal" FontSize="15" LineHeight="20" TextWrapping="Wrap" />
+                                    <Image x:Name="image" Grid.Column="1" Source="{Binding Path=imagepath, Converter={StaticResource Converter1}}" Height="90" Width="90" Margin="0,3,12,7" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Path=name}" VerticalAlignment="Center" Foreground="Black" FontWeight="Normal" FontSize="15" LineHeight="20" TextWrapping="Wrap" />
 
-                                    <AppBarButton Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" IsCompact="True" Icon="Setting" Margin="15,15,0,0">
+                                    <AppBarButton Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right" IsCompact="True" Icon="Setting">
                                         <AppBarButton.Flyout>
                                             <MenuFlyout>
-                                                <MenuFlyoutItem Text="Edit" Click="Edit_Click"/>
-                                                <MenuFlyoutItem Text="Share" Click="ShareButton_Click"/>
+                                                <MenuFlyoutItem Text="Modify" Click="Edit_Click"/>
                                                 <MenuFlyoutItem Text="Delete" Click="Delete_Click"/>
+                                                <MenuFlyoutItem Text="Share" Click="ShareButton_Click"/>
                                             </MenuFlyout>
                                         </AppBarButton.Flyout>
                                     </AppBarButton>
@@ -105,29 +112,6 @@
 
                 </ListView>
             </ScrollViewer>
-
-            <Grid x:Name="DetailsView" Grid.Column="1">
-                <Grid>
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Image x:Name="Pic" Source="Assets/background.jpg" Width="350" Height="200" />
-                            <RelativePanel Width="350">
-                                <AppBarButton x:Name="Select" Icon="Pictures" Label="select" RelativePanel.AlignRightWithPanel="True" RenderTransformOrigin="-2.065,0.628" />
-                            </RelativePanel>
-
-                            <TextBox x:Name="_Title"  Width="350" Header="Title" />
-                            <TextBox x:Name="Details" Width="350" Height="111" Header="Details" />
-                            <DatePicker x:Name="date" Width="350" Header="Due Date" HorizontalAlignment="Center" />
-                            <TextBox x:Name="Booknumber" Width="350" Header="Book Number"></TextBox>
-
-                            <RelativePanel Width="350" Margin="0,20,0,0">
-                                <Button x:Name="KeyButton" Content="Create" Click="KeyButton_Click"/>
-                                <Button x:Name="CancelButton" Content="Cancel" RelativePanel.AlignRightWithPanel="True" Click="CancelButton_Click" />
-                            </RelativePanel>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
 
         </Grid>
     </Grid>

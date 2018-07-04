@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 
@@ -77,6 +78,20 @@ namespace Book_Management_System.Models
             }
         }
 
+        private List<string> _books;
+
+        public List<string> books
+        {
+            get
+            {
+                return _books;
+            }
+            set
+            {
+                _books = value;
+            }
+        }
+
         // 管理员权限默认
         // 用户注册时自动设置为Reader
         private enum Authority { Reader, Administrator}
@@ -93,11 +108,19 @@ namespace Book_Management_System.Models
             }
         }
 
+        public User(string name, string pass, string phone, string email)
+        {
+            this.username = name;
+            this.passward = pass;
+            this.phone = phone;
+            this.email = email;
+            this.books = new List<string>();
+        }
+
         public bool Valid_usernameAsync(string username)
         {
             if (username == "")
             {
-                // var i = new MessageDialog("Please input your username!").ShowAsync();
                 return false;
             }
             return true;
@@ -107,12 +130,10 @@ namespace Book_Management_System.Models
         {
             if (passward == "")
             {
-                // var i = new MessageDialog("Please input your passward!").ShowAsync();
                 return false;
             }
             if (passward.Length < 8)
             {
-                // var i = new MessageDialog("Passward must longer than 8 characters!").ShowAsync();
                 return false;
             }
             return true;
@@ -122,20 +143,18 @@ namespace Book_Management_System.Models
         {
             if (phone.Length != 11)
             {
-                // var i = new MessageDialog("Please input you 11 characters phone number!").ShowAsync();
                 return false;
             }
-            return true;
+            return Regex.IsMatch(phone, @"^1[34578]+\d{1}((-)?\d{4}){2}$");
         }
 
         public bool valid_emailAsync(string email)
         {
             if (email == "")
             {
-                // var i = new MessageDialog("Please input your email!").ShowAsync();
                 return false;
             }
-            return true;
+            return Regex.IsMatch(email, @"^[A-Za-z]+([-.]\w+)*@\w+([-.]\w+)*\.[a-z]{2,3}$");
         }
     }
 }

@@ -48,14 +48,14 @@ namespace Book_Management_System.Views
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
         }
 
-        private ViewModels.ManagementViewModels ViewModel;
+        ViewModels.ManagementViewModels ViewModel { get; set; }
 
         async void OnShareDateRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
-            dp.Properties.Title = ViewModel.SelectedItem.title;
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
+            dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
@@ -70,28 +70,32 @@ namespace Book_Management_System.Views
             if (ViewModel.SelectedItem != null)
             {
                 createButton.Content = "Update";
-                title.Text = ViewModel.SelectedItem.title;
-                //description.Text = ViewModel.SelectedItem.description;
-                //date.Date = ViewModel.SelectedItem.datetime;
-                //bookNumber.Text = ViewModel.SelectedItem.bookNumber;
-                var conn = new SQLiteConnection("BMSS.db");
-                using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
+                title.Text = ViewModel.SelectedItem.name;
+                description.Text = ViewModel.SelectedItem.description;
+                date.Date = ViewModel.SelectedItem.datetime;
+                pic.Source = new BitmapImage(new Uri(ViewModel.SelectedItem.imagepath));
+                var conn = new SQLiteConnection("BMS.db");
+                using (var statement = conn.Prepare("SELECT Name,Description,Date,ImagePath FROM BookItem WHERE Name = ?"))
                 {
                     statement.Bind(1, title.Text);
                     statement.Step();
                     title.Text = (string)statement[0];
                     description.Text = (string)statement[1];
+                    pic.Source = new BitmapImage(new Uri((string)statement[3]));
                     date.Date = Convert.ToDateTime((string)statement[2]).Date;
-                    bookNumber.Text = (string)statement[3];
                 }
+
+                path = this.ViewModel.SelectedItem.imagepath;
+
                 //var i = new MessageDialog("Welcome!").ShowAsync();
             }
             else
             {
                 createButton.Content = "Create";
-                // ...
             }
         }
+        string path;
+
         private void CreateButton_Clicked(object sender, RoutedEventArgs e)
         {
             if (ViewModel.SelectedItem == null)
@@ -109,26 +113,21 @@ namespace Book_Management_System.Views
                 {
                     temp += "The Details can't be empty!\n";
                 }
-                if (bookNumber.Text == "")
-                {
-                    temp += "The book number can't be empty!\n";
-                }
                 if (temp != "")
                 {
                     var i = new MessageDialog(temp).ShowAsync();
                 }
                 else if (temp == "")
                 {
-                    var i = new MessageDialog("Success!").ShowAsync();
-                    ViewModel.AddBook(title.Text, description.Text, date.Date.DateTime, bookNumber.Text);
-                    
+                    var i = new MessageDialog("Create success!").ShowAsync();
+                    ViewModel.AddBook(title.Text, description.Text, date.Date.DateTime, path);
                     Frame.Navigate(typeof(AdminPage), ViewModel);
                 }
             }
             else if (ViewModel.SelectedItem != null)
             {
-                ViewModel.UpdateBook(title.Text, description.Text, date.Date.DateTime, bookNumber.Text);
-                
+                var i = new MessageDialog("Update success!").ShowAsync();
+                ViewModel.UpdateBook(title.Text, description.Text, date.Date.DateTime, path);
                 Frame.Navigate(typeof(AdminPage), ViewModel);
             }
         } // completed
@@ -154,8 +153,11 @@ namespace Book_Management_System.Views
             title.Text = "";
             description.Text = "";
             date.Date = DateTime.Now.Date;
-        }
+            pic.Source = new BitmapImage(new Uri(path));
 
+            Frame.Navigate(typeof(AdminPage), ViewModel);
+        }
+        
         private async void SelectPictureButton_Click(object sender, RoutedEventArgs e)
         {
             FileOpenPicker openPicker = new FileOpenPicker();
@@ -165,6 +167,7 @@ namespace Book_Management_System.Views
             openPicker.FileTypeFilter.Add(".png");
 
             StorageFile file = await openPicker.PickSingleFileAsync();
+            path = "ms-appx:///Assets/" + file.Name;
             if (file != null)
             {
                 IRandomAccessStream ir = await file.OpenAsync(FileAccessMode.Read);

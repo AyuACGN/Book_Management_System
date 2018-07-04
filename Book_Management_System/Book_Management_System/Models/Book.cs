@@ -13,17 +13,17 @@ namespace Book_Management_System.Models
 
         public string id;
 
-        private string _title;
+        private string _name;
 
-        public string title
+        public string name
         {
             get
             {
-                return _title;
+                return _name;
             }
             set
             {
-                _title = value;
+                _name = value;
                 OnPropertyChanged();
             }
         }
@@ -58,28 +58,13 @@ namespace Book_Management_System.Models
             }
         }
         
-        private string _bookNumber;
-
-        public string bookNumber
-        {
-            get
-            {
-                return _bookNumber;
-            }
-            set
-            {
-                _bookNumber = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public Book(string title, string description, DateTime date, string booknumber)
+        public Book(string name, string description, DateTime date, string imagePath)
         {
             this.id = Guid.NewGuid().ToString();
-            this.title = title;
+            this.name = name;
             this.description = description;
             this.datetime = date;
-            this.bookNumber = booknumber;
+            this.imagePath = imagePath;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -89,6 +74,34 @@ namespace Book_Management_System.Models
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private string imagePath;
+
+        public string imagepath
+        {
+            get
+            {
+                return imagePath;
+            }
+            set
+            {
+                imagePath = value;
+            }
+        }
+        
+        private int _status;
+
+        public int status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                _status = value;
             }
         }
     }

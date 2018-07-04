@@ -35,7 +35,7 @@ namespace Book_Management_System.Views
     {
         DataTransferManager dataTransferManager;
 
-        User user = new User();
+        User user = new User("", "", "", "");
 
         string username = "";
 
@@ -61,8 +61,8 @@ namespace Book_Management_System.Views
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
-            dp.Properties.Title = ViewModel.SelectedItem.title;
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
+            dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
@@ -72,7 +72,7 @@ namespace Book_Management_System.Views
         {
             username = (string)e.Parameter;
             UserName.Text = username;
-            var conn = new SQLiteConnection("BMSS.db");
+            var conn = new SQLiteConnection("BMS.db");
             using (var statement = conn.Prepare("SELECT Password,Phone,Email FROM UserList WHERE Name = ?"))
             {
                 statement.Bind(1, username);
@@ -80,6 +80,21 @@ namespace Book_Management_System.Views
                 Password.Password = (string)statement[0];
                 Phone.Text = (string)statement[1];
                 Email.Text = (string)statement[2];
+            }
+
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            if (rootFrame.CanGoBack)
+            {
+                // Show UI in title bar if opted-in and in-app backstack is not empty.
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Visible;
+            }
+            else
+            {
+                // Remove the UI from the title bar if in-app back stack is empty.
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Collapsed;
             }
         }
 
@@ -111,7 +126,7 @@ namespace Book_Management_System.Views
                 return;
             }
 
-            var conn = new SQLiteConnection("BMSS.db");
+            var conn = new SQLiteConnection("BMS.db");
             using (var statement = conn.Prepare("UPDATE UserList SET Password = ?,Phone = ?, Email = ? WHERE Name = ?"))
             {
                 statement.Bind(1, Password.Password);
@@ -120,6 +135,7 @@ namespace Book_Management_System.Views
                 statement.Bind(4, username);
                 statement.Step();
                 var i = new MessageDialog("Success!").ShowAsync();
+                Frame.Navigate(typeof(UserPage), username);
             }
         }
 
@@ -144,18 +160,6 @@ namespace Book_Management_System.Views
             else
             {
                 phone_status.Text = "invalid";
-            }
-        }
-
-        private void UserName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (user.Valid_usernameAsync(UserName.Text.ToString()))
-            {
-                username_status.Text = "valid";
-            }
-            else
-            {
-                username_status.Text = "invalid";
             }
         }
 

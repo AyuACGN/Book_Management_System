@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
@@ -38,21 +39,20 @@ namespace Book_Management_System.Views
             viewTitleBar.BackgroundColor = Windows.UI.Colors.CornflowerBlue;
             viewTitleBar.ButtonBackgroundColor = Windows.UI.Colors.CornflowerBlue;
             this.ViewModel = new ViewModels.ManagementViewModels();
-            NavigationCacheMode = NavigationCacheMode.Enabled;
             TileUpdateManager.CreateTileUpdaterForApplication().Clear();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
         }
 
-        ViewModels.ManagementViewModels ViewModel { get; set; }
+        ViewModels.ManagementViewModels ViewModel;
 
         async void OnShareDateRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
-            dp.Properties.Title = ViewModel.SelectedItem.title;
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
+            dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
@@ -64,14 +64,12 @@ namespace Book_Management_System.Views
             {
                 this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
             }
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
 
         private void TodoItem_ItemClicked(object sender, ItemClickEventArgs e)
         {
             ViewModel.SelectedItem = (Models.Book)(e.ClickedItem);
             Frame.Navigate(typeof(BookInfoPage), ViewModel);
-            
         } // completed
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -81,69 +79,12 @@ namespace Book_Management_System.Views
             this.Frame.Navigate(typeof(BookInfoPage), ViewModel);
             
         } // completed
-
-        private void KeyButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.SelectedItem != null)
-            {
-                ViewModel.UpdateBook(_Title.Text, Details.Text, date.Date.DateTime, Booknumber.Text);
-                _Title.Text = "";
-                Details.Text = "";
-                date.Date = DateTime.Now.Date;
-                KeyButton.Content = "Create";
-                
-                Frame.Navigate(typeof(MainPage), ViewModel);
-            }
-            else if (ViewModel.SelectedItem == null)
-            {
-                string temp = "";
-                if (date.Date < DateTime.Now.Date)
-                {
-                    temp += "Your Date is wrong!\n";
-                }
-                if (_Title.Text == "")
-                {
-                    temp += "The title can't be empty!\n";
-                }
-                if (Details.Text == "")
-                {
-                    temp += "The Details can't be empty!\n";
-                }
-                if (temp != "")
-                {
-                    var i = new MessageDialog(temp).ShowAsync();
-                }
-                else if (temp == "")
-                {
-                    string title = _Title.Text;
-                    string des = Details.Text;
-                    DateTime d = date.Date.DateTime;
-                    string bn = Booknumber.Text;
-                    ViewModel.AddBook(title, des, d, bn);
-
-                    var i = new MessageDialog("Success!").ShowAsync();
-                }
-            }
-        } // completed
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            _Title.Text = "";
-            Details.Text = "";
-            date.Date = DateTime.Now.Date;
-        } // completed
-
+        
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             dynamic ori = e.OriginalSource;
             ViewModel.SelectedItem = (Book)ori.DataContext;
             ViewModel.RemoveBook(ViewModel.SelectedItem);
-            _Title.Text = "";
-            Details.Text = "";
-            date.Date = DateTime.Now.Date;
-            TileUpdateManager.CreateTileUpdaterForApplication().Clear();
-            
-            KeyButton.Content = "Create";
         }
 
         private void ShareButton_Click(object sender, RoutedEventArgs e)
@@ -178,6 +119,27 @@ namespace Book_Management_System.Views
         private void logout_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(MainPage), ViewModel);
+        }
+        
+    }
+
+    public class DateToStringConverter : IValueConverter
+    {
+        // Define the Convert method to convert a DateTime value to 
+        // a month string.
+        public object Convert(object value, Type targetType,
+            object parameter, string language)
+        {
+            string path = (string)value;
+            BitmapImage image = new BitmapImage(new Uri(path));
+            return image;
+        }
+
+        // ConvertBack is not implemented for a OneWay binding.
+        public object ConvertBack(object value, Type targetType,
+            object parameter, string language)
+        {
+            throw new NotImplementedException();
         }
     }
 }

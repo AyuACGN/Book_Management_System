@@ -23,15 +23,13 @@
         </RelativePanel>
 
         <Grid Grid.Row="1" VerticalAlignment="Center">
-            <ScrollViewer>
-                <StackPanel>
-                    <TextBlock HorizontalAlignment="Center" Width="280" Height="80" FontSize="40" Text=" START USING"></TextBlock>
-                    <RelativePanel Width="350" Margin="0,24,0,0">
-                        <Button x:Name="signupButton" Content="signup" HorizontalAlignment="Left" Width="63" Click="signupButton_Click"/>
-                        <Button x:Name="signinButton" Content="signin" RelativePanel.AlignRightWithPanel="True" Click="signinButton_Click"/>
-                    </RelativePanel>
-                </StackPanel>
-            </ScrollViewer>
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center" Width="280" Height="80" FontSize="40" Text=" START USING"></TextBlock>
+                <RelativePanel Width="350" Margin="0,24,0,0">
+                    <Button x:Name="signupButton" Content="signup" RelativePanel.AlignLeftWithPanel="True" Click="signupButton_Click"/>
+                    <Button x:Name="signinButton" Content="signin" RelativePanel.AlignRightWithPanel="True" Click="signinButton_Click"/>
+                </RelativePanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

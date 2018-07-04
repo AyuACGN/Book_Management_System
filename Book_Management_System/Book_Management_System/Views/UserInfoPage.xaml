@@ -26,7 +26,7 @@
         <Grid Grid.Row="1" VerticalAlignment="Center">
             <ScrollViewer>
                 <StackPanel>
-                    <TextBox x:Name="UserName" Width="350" Header="New user Name" Margin="0,12,0,0" TextChanged="UserName_TextChanged"/>
+                    <TextBox x:Name="UserName" IsReadOnly="True" Width="350" Header="New user Name" Margin="0,12,0,0" />
                     <TextBlock x:Name="username_status" Margin="10" HorizontalAlignment="Center" />
                     <PasswordBox x:Name="Password" Width="350" Margin="0,12,0,0" Header="New password" PasswordChanged="Password_PasswordChanged"/>
                     <TextBlock x:Name="password_status" Margin="10" HorizontalAlignment="Center" />
