@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,9 +45,9 @@ namespace Book_Management_System.ViewModels
 
         private void loadDatabase()
         {
-            conn = new SQLiteConnection("BMSS.db");
+            conn = new SQLiteConnection("BMS.db");
             string sql = @"CREATE TABLE IF NOT EXISTS
-                             BookItem (Id VARCHAR(140) PRIMARY KEY,Title VARCHAR(140),Description VARCHAR(140),Date VARCHAR(140), BookNumber VARCHAR(140))";
+                             BookItem (Id VARCHAR(140) PRIMARY KEY,Name VARCHAR(140),Description VARCHAR(140),Date VARCHAR(140), ImagePath VARCHAR(140), Status VARCHAR(140))";
             using (var statement = conn.Prepare(sql))
             {
                 statement.Step();
@@ -81,7 +82,7 @@ namespace Book_Management_System.ViewModels
             try
             {
                 // 初始化数据，读取当前本地存储的所有图书数据
-                using (var statement = db.Prepare("SELECT Id,Title,Description,Date,BookNumber FROM BookItem"))
+                using (var statement = db.Prepare("SELECT Id,Name,Description,Date,ImagePath FROM BookItem"))
                 {
                     while (SQLiteResult.ROW ==statement.Step())
                     {
@@ -192,22 +193,34 @@ namespace Book_Management_System.ViewModels
         }
 
         // 加入新的书目
-        public void AddBook(string title, string description, DateTime a, string booknumber)
+        public void AddBook(string name, string description, DateTime a, string imagePath)
         {
             Models.Book newOne;
-            newOne = new Models.Book(title, description, a, booknumber);
+            newOne = new Models.Book(name, description, a, imagePath);
             this.allbooks.Add(newOne);
+            
+
+            using (var statement = conn.Prepare("SELECT Id FROM BookItem WHERE Name = ?"))
+            {
+                statement.Bind(1, name);
+                if (SQLiteResult.ROW == statement.Step())
+                {
+                    var i = new MessageDialog("This book has already existed!").ShowAsync();
+                    return;
+                }
+            }
 
             var db = conn;
             try
             {
-                using (var todoItem = db.Prepare("INSERT INTO BookItem (Id, Title, Description, Date, BookNumber) VALUES (?, ?, ?, ?, ?)"))
+                using (var todoItem = db.Prepare("INSERT INTO BookItem (Id, Name, Description, Date, ImagePath, Status) VALUES (?, ?, ?, ?, ?, ?)"))
                 {
                     todoItem.Bind(1, newOne.id);
-                    todoItem.Bind(2, title);
+                    todoItem.Bind(2, name);
                     todoItem.Bind(3, description);
                     todoItem.Bind(4, a.ToString());
-                    todoItem.Bind(5, booknumber);
+                    todoItem.Bind(5, imagePath);
+                    todoItem.Bind(6, 1.ToString());
                     todoItem.Step();
                 }
             }
@@ -225,33 +238,29 @@ namespace Book_Management_System.ViewModels
                 statement.Bind(1, item.id);
                 statement.Step();
             }
-            // DIY
             this.Allbooks.Remove(item);
-            // set selectedItem to null after remove
             this.selectedItem = null;
         }
 
         // 更新书本信息
-        public void UpdateBook(string title, string description, DateTime datetime, string booknumber)
+        public void UpdateBook(string name, string description, DateTime datetime, string imagePath)
         {
-            // var existTodoItem = getTodoItem(this.selectedItem.id);
-
             if (this.selectedItem != null)
             {
-                using (var todoitem = conn.Prepare("UPDATE BookItem SET Title = ?, Description = ?, Date = ?, BookNumber = ? WHERE Id = ?"))
+                using (var todoitem = conn.Prepare("UPDATE BookItem SET Name = ?, Description = ?, Date = ?, ImagePath = ? WHERE Id = ?"))
                 {
-                    todoitem.Bind(1, title);
+                    todoitem.Bind(1, name);
                     todoitem.Bind(2, description);
                     todoitem.Bind(3, datetime.ToString());
-                    todoitem.Bind(4, booknumber);
+                    todoitem.Bind(4, imagePath);
                     todoitem.Bind(5, selectedItem.id);
                     todoitem.Step();
                 }
             }
-            this.selectedItem.title = title;
+            this.selectedItem.name = name;
             this.selectedItem.description = description;
             this.selectedItem.datetime = datetime;
-            this.selectedItem.bookNumber = booknumber;
+            this.selectedItem.imagepath = imagePath;
 
             this.selectedItem = null;
         }
@@ -259,7 +268,7 @@ namespace Book_Management_System.ViewModels
         // 查询书本信息
         public void QueryBook(string text)
         {
-            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ? OR Description = ? OR Date = ?"))
+            using (var statement = conn.Prepare("SELECT Name,Description FROM BookItem WHERE Name = ? OR Description = ? OR Date = ?"))
             {
                 statement.Bind(1, text);
                 statement.Bind(2, text);
@@ -268,12 +277,10 @@ namespace Book_Management_System.ViewModels
                 str.Length = 0;
                 while (SQLiteResult.ROW == statement.Step())
                 {
-                    str.Append("Title:");
+                    str.Append(" Name:");
                     str.Append((string)statement[0]);
                     str.Append("  Description:");
                     str.Append((string)statement[1]);
-                    str.Append("  Book Number:");
-                    str.Append((string)statement[3]);
                     str.Append("\n");
                 }
                 if (str.Length == 0)
@@ -346,25 +353,24 @@ namespace Book_Management_System.ViewModels
                     return;
                 }
             }
-            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
+            using (var statement = conn.Prepare("SELECT Name,Description,Date,Status FROM BookItem WHERE Name = ?"))
             {
                 StringBuilder str = new StringBuilder();
                 str.Length = 0;
                 statement.Bind(1, bookname);
                 if (SQLiteResult.ROW == statement.Step())
                 {
-                    if (int.Parse((string)statement[3]) < 1)
+                    if (int.Parse((string)statement[3]) == 0)
                     {
                         var i = new MessageDialog("This book is out of loan").ShowAsync();
                     }
                     else
                     {
-                        int k = int.Parse((string)statement[3]) - 1;
                         AddBorrowRecord(username, bookname, a);
-                        var i = new MessageDialog("Sucess!").ShowAsync();
-                        using (var sta = conn.Prepare("UPDATE BookItem SET BookNumber = ? WHERE Title = ?"))
+                        var i = new MessageDialog("Borrow sucess!").ShowAsync();
+                        using (var sta = conn.Prepare("UPDATE BookItem SET Status = ? WHERE Name = ?"))
                         {
-                            sta.Bind(1, k.ToString());
+                            sta.Bind(1, 0.ToString());
                             sta.Bind(2, bookname);
                             sta.Step();
                         }
@@ -388,7 +394,18 @@ namespace Book_Management_System.ViewModels
                     return;
                 }
             }
-            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
+
+            using (var sss = conn.Prepare("SELECT Name FROM BookItem WHERE Name = ?"))
+            {
+                sss.Bind(1, bookname);
+                if (SQLiteResult.ROW != sss.Step())
+                {
+                    var i = new MessageDialog("There is no theis book!").ShowAsync();
+                    return;
+                }
+            }
+
+            using (var statement = conn.Prepare("SELECT Name,Description,Date,ImagePath FROM BookItem WHERE Name = ?"))
             {
                 StringBuilder str = new StringBuilder();
                 str.Length = 0;
@@ -402,37 +419,41 @@ namespace Book_Management_System.ViewModels
                         if (SQLiteResult.ROW != std.Step())
                         {
                             var i = new MessageDialog("You have not borrowed this book!").ShowAsync();
+                            return;
                         }
                         else
                         {
-                            int k = int.Parse((string)statement[3]) + 1;
-                            AddReturnRecord(username, bookname, a);
-                            var i = new MessageDialog("Sucess!").ShowAsync();
-                            using (var sta = conn.Prepare("UPDATE BookItem SET BookNumber = ? WHERE Title = ?"))
+                            using (var s = conn.Prepare("SELECT Status FROM BookItem WHERE Name = ?"))
                             {
-                                sta.Bind(1, k.ToString());
-                                sta.Bind(2, bookname);
-                                sta.Step();
-                            }
-                            using (var sta = conn.Prepare("DELETE FROM BorrowHistory WHERE BookName = ? AND UserName = ?"))
-                            {
-                                sta.Bind(1, bookname);
-                                sta.Bind(2, username);
-                                sta.Step();
+                                s.Bind(1, bookname);
+                                if (SQLiteResult.ROW == s.Step())
+                                {
+                                    if (int.Parse((string)s[0]) == 1)
+                                    {
+                                        var im = new MessageDialog("This book has been returned").ShowAsync();
+                                    }
+                                    else
+                                    {
+                                        AddReturnRecord(username, bookname, a);
+                                        var ie = new MessageDialog("return sucess!").ShowAsync();
+                                        using (var sta = conn.Prepare("UPDATE BookItem SET Status = ? WHERE Name = ?"))
+                                        {
+                                            sta.Bind(1, 1.ToString());
+                                            sta.Bind(2, bookname);
+                                            sta.Step();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    var i = new MessageDialog("There is no this book").ShowAsync();
                 }
             }
         } // 完整还书流程
 
         public string AdminHistory(string bookname)
         {
-            using (var statement = conn.Prepare("SELECT Title FROM BookItem WHERE Title = ?"))
+            using (var statement = conn.Prepare("SELECT Name FROM BookItem WHERE Name = ?"))
             {
                 statement.Bind(1, bookname);
                 if (SQLiteResult.ROW != statement.Step())
@@ -441,11 +462,30 @@ namespace Book_Management_System.ViewModels
                     return "error";
                 }
             }
+
+            StringBuilder str = new StringBuilder();
+            str.Length = 0;
+            str.Append("BorrowHistory\n");
+
             using (var statement = conn.Prepare("SELECT BookName,UserName,Date FROM BorrowHistory WHERE BookName = ?"))
             {
                 statement.Bind(1, bookname);
-                StringBuilder str = new StringBuilder();
-                str.Length = 0;
+                str.Append("UserName      Date");
+                str.Append("\r\n");
+                while (SQLiteResult.ROW == statement.Step())
+                {
+                    str.Append((string)statement[1]);
+                    str.Append("             ");
+                    str.Append((string)statement[2]);
+                    str.Append("\r\n");
+                }
+            }
+
+            str.Append("ReturnHistory\n");
+
+            using (var statement = conn.Prepare("SELECT BookName,UserName,Date FROM ReturnHistory WHERE BookName = ?"))
+            {
+                statement.Bind(1, bookname);
                 str.Append("UserName      Date");
                 str.Append("\r\n");
                 while (SQLiteResult.ROW == statement.Step())

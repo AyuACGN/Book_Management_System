@@ -60,8 +60,8 @@ namespace Book_Management_System.Views
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
-            dp.Properties.Title = ViewModel.SelectedItem.title;
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven.png"));
+            dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
@@ -70,7 +70,7 @@ namespace Book_Management_System.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             user = (string)e.Parameter;
-
+            Title.Text = ("Welcome " + user + "!");
         }
 
         private void Search_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
@@ -105,7 +105,6 @@ namespace Book_Management_System.Views
         private void searchHis_Click(object sender, RoutedEventArgs e)
         {
             var conn = new SQLiteConnection("BMSS.db");
-            int q = 0;
             using (var statement = conn.Prepare("SELECT BookName,Date FROM ReturnHistory WHERE UserName = ?"))
             {
                 statement.Bind(1, user);

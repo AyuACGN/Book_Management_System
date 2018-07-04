@@ -19,24 +19,21 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="textBlock" Grid.Row="0" Text="Edit Book Message" Style="{StaticResource HeaderTextBlockStyle}"/>
-        <Grid Grid.Row="1">
-            <ScrollViewer>
-                <StackPanel>
-                    <Image  x:Name="pic" Source="Assets/background.jpg" Width="350" Height="180" Stretch="UniformToFill"/>
-                    <RelativePanel Width="350">
-                        <AppBarButton x:Name="SelectPictureButton" Icon="Pictures" Label="select" RelativePanel.AlignRightWithPanel="True" Click="SelectPictureButton_Click"/>
-                    </RelativePanel>
-                    <TextBox x:Name="title" Width="350" Header="Book Name" Margin="0,12,0,0" />
-                    <TextBox x:Name="description" Width="350" Height="96" Margin="0,12,0,0" Header="Description" />
-                    <DatePicker x:Name="date" Width="350" Margin="0,12,0,0" Header="Due Date" HorizontalAlignment="Center" />
-                    <TextBox x:Name="bookNumber" Width="350" Margin="0, 12, 0, 0" Header="BookNumber"></TextBox>
-                    <RelativePanel Width="350" Margin="0,24,0,0">
-                        <Button x:Name="createButton" Content="Submit" HorizontalAlignment="Left" Width="63" Click="CreateButton_Clicked"/>
-                        <Button x:Name="CancelButton" Content="Cancel" RelativePanel.AlignRightWithPanel="True" Click="CancelButton_Click"/>
-                    </RelativePanel>
-                </StackPanel>
-            </ScrollViewer>
+        <TextBlock HorizontalAlignment="Center" x:Name="textBlock" Grid.Row="0" Text="Edit Books" Style="{StaticResource HeaderTextBlockStyle}"/>
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+                <Image  x:Name="pic" Source="Assets/background.jpg" Width="350" Height="180" Stretch="UniformToFill"/>
+                <RelativePanel Width="350">
+                    <AppBarButton x:Name="SelectPictureButton" Icon="Pictures" Label="select" RelativePanel.AlignRightWithPanel="True" Click="SelectPictureButton_Click"/>
+                </RelativePanel>
+                <TextBox x:Name="title" Width="350" Header="Book Name" Margin="0,12,0,0" />
+                <TextBox x:Name="description" Width="350" Height="96" Margin="0,12,0,0" Header="Description" />
+                <DatePicker x:Name="date" Width="350" Margin="0,12,0,0" Header="Due Date" HorizontalAlignment="Center" />
+                <RelativePanel Width="350" Margin="0,24,0,0">
+                    <Button x:Name="createButton" Content="Submit" HorizontalAlignment="Left" Width="63" Click="CreateButton_Clicked"/>
+                    <Button x:Name="CancelButton" Content="Cancel" RelativePanel.AlignRightWithPanel="True" Click="CancelButton_Click"/>
+                </RelativePanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

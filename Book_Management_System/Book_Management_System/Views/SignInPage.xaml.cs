@@ -57,8 +57,8 @@ namespace Book_Management_System.Views
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
-            dp.Properties.Title = ViewModel.SelectedItem.title;
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/vallhaven-588148.png"));
+            dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
@@ -70,7 +70,21 @@ namespace Book_Management_System.Views
             {
                 this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
             }
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            if (rootFrame.CanGoBack)
+            {
+                // Show UI in title bar if opted-in and in-app backstack is not empty.
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Visible;
+            }
+            else
+            {
+                // Remove the UI from the title bar if in-app back stack is empty.
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    AppViewBackButtonVisibility.Collapsed;
+            }
         }
 
         private void signinButton_Click(object sender, RoutedEventArgs e)
@@ -96,7 +110,11 @@ namespace Book_Management_System.Views
             {
                 Frame.Navigate(typeof(UserPage), UserName.Text);
             }
+        }
 
+        private void returnButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MainPage), UserName.Text);
         }
     }
 }

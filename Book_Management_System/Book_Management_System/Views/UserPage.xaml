@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <RelativePanel Grid.Row="0">
-            <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}">Book Manage System for User</TextBlock>
+            <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
             <SearchBox x:Name="Search" Width="200" Height="40" RelativePanel.AlignRightWithPanel="True" Margin="0,18,10,0" QuerySubmitted="Search_QuerySubmitted" />
         </RelativePanel>
 
