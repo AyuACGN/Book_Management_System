@@ -44,7 +44,7 @@ namespace Book_Management_System.ViewModels
 
         private void loadDatabase()
         {
-            conn = new SQLiteConnection("BookManageSystem.db");
+            conn = new SQLiteConnection("BMSS.db");
             string sql = @"CREATE TABLE IF NOT EXISTS
                              BookItem (Id VARCHAR(140) PRIMARY KEY,Title VARCHAR(140),Description VARCHAR(140),Date VARCHAR(140), BookNumber VARCHAR(140))";
             using (var statement = conn.Prepare(sql))
@@ -53,7 +53,7 @@ namespace Book_Management_System.ViewModels
             }
 
             string usrList = @"CREATE TABLE IF NOT EXISTS
-                             UserList (Name VARCHAR(140) PRIMARY KEY,Password VARCHAR(140),authority VARCHAR(140))";
+                             UserList (Name VARCHAR(140) PRIMARY KEY,Password VARCHAR(140),authority VARCHAR(140),Phone VARCHAR(140), Email VARCHAR(140))";
 
             using (var statement1 = conn.Prepare(usrList))
             {
@@ -155,7 +155,7 @@ namespace Book_Management_System.ViewModels
             return 0;
         } // 登陆函数
 
-        public void AddUser(string username, string password)
+        public int AddUser(string username, string password, string phone, string email)
         {
             var db = conn;
 
@@ -166,25 +166,29 @@ namespace Book_Management_System.ViewModels
                 if (SQLiteResult.ROW == statement.Step())
                 {
                     var i = new MessageDialog("This account has been signed up!").ShowAsync();
-                    return;
+                    return 0;
                 }
             }
             // 将创建的用户信息写入数据库
             try
             {
-                using (var userItem = db.Prepare("INSERT INTO UserList (Name,Password,Authority) VALUES (?, ?, ?)"))
+                using (var userItem = db.Prepare("INSERT INTO UserList (Name,Password,Authority,Phone,Email) VALUES (?, ?, ?, ?, ?)"))
                 {
                     userItem.Bind(1, username);
                     userItem.Bind(2, password);
                     userItem.Bind(3, "1");
+                    userItem.Bind(4, phone);
+                    userItem.Bind(5, email);
                     userItem.Step();
                     var i = new MessageDialog("Success!").ShowAsync();
+                    return 1;
                 }
             }
             catch (Exception ex)
             {
                 var i = new MessageDialog(ex.ToString()).ShowAsync();
             }
+            return 0;
         }
 
         // 加入新的书目

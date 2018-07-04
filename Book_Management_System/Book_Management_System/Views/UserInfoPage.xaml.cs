@@ -37,6 +37,8 @@ namespace Book_Management_System.Views
 
         User user = new User();
 
+        string username = "";
+
         public UserInfoPage()
         {
             this.InitializeComponent();
@@ -66,6 +68,21 @@ namespace Book_Management_System.Views
             deferral.Complete();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            username = (string)e.Parameter;
+            UserName.Text = username;
+            var conn = new SQLiteConnection("BMSS.db");
+            using (var statement = conn.Prepare("SELECT Password,Phone,Email FROM UserList WHERE Name = ?"))
+            {
+                statement.Bind(1, username);
+                statement.Step();
+                Password.Password = (string)statement[0];
+                Phone.Text = (string)statement[1];
+                Email.Text = (string)statement[2];
+            }
+        }
+
         public void modifyButton_Click(object sender, RoutedEventArgs e)
         {
             if (UserName.Text == "")
@@ -93,24 +110,16 @@ namespace Book_Management_System.Views
                 var i = new MessageDialog("Please enter your email!").ShowAsync();
                 return;
             }
-            Frame.Navigate(typeof(UserPage));
-        }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-
-            if (rootFrame.CanGoBack)
+            var conn = new SQLiteConnection("BMSS.db");
+            using (var statement = conn.Prepare("UPDATE UserList SET Password = ?,Phone = ?, Email = ? WHERE Name = ?"))
             {
-                // Show UI in title bar if opted-in and in-app backstack is not empty.
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                    AppViewBackButtonVisibility.Visible;
-            }
-            else
-            {
-                // Remove the UI from the title bar if in-app back stack is empty.
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                    AppViewBackButtonVisibility.Collapsed;
+                statement.Bind(1, Password.Password);
+                statement.Bind(2, Phone.Text);
+                statement.Bind(3, Email.Text);
+                statement.Bind(4, username);
+                statement.Step();
+                var i = new MessageDialog("Success!").ShowAsync();
             }
         }
 

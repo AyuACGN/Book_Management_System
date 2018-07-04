@@ -74,7 +74,7 @@ namespace Book_Management_System.Views
                 //description.Text = ViewModel.SelectedItem.description;
                 //date.Date = ViewModel.SelectedItem.datetime;
                 //bookNumber.Text = ViewModel.SelectedItem.bookNumber;
-                var conn = new SQLiteConnection("BookManageSystem.db");
+                var conn = new SQLiteConnection("BMSS.db");
                 using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
                 {
                     statement.Bind(1, title.Text);

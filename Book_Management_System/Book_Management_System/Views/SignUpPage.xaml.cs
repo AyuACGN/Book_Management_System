@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Navigation;
 using Book_Management_System.Models;
 using Windows.UI.Popups;
 using Windows.UI.Core;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -35,58 +37,90 @@ namespace Book_Management_System.Views
     /// </summary>
     public sealed partial class SignUpPage : Page
     {
+        DataTransferManager dataTransferManager;
+
+
         public SignUpPage()
         {
             this.InitializeComponent();
+            var viewTitleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
+            viewTitleBar.BackgroundColor = Windows.UI.Colors.CornflowerBlue;
+            viewTitleBar.ButtonBackgroundColor = Windows.UI.Colors.CornflowerBlue;
+            this.ViewModel = new ViewModels.ManagementViewModels();
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+           
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            dataTransferManager = DataTransferManager.GetForCurrentView();
+            dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
         }
+
+        ViewModels.ManagementViewModels ViewModel { get; set; }
+
+        async void OnShareDateRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            var dp = args.Request.Data;
+            var deferral = args.Request.GetDeferral();
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
+            dp.Properties.Title = ViewModel.SelectedItem.title;
+            dp.Properties.Description = ViewModel.SelectedItem.description;
+            dp.SetStorageItems(new List<StorageFile> { photoFile });
+            deferral.Complete();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter.GetType() == typeof(ViewModels.ManagementViewModels))
+            {
+                this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
+            }
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+        }
+
 
         public void signupButton_Click(object sender, RoutedEventArgs e)
         {
             User user = new User();
-
+            string temp = "";
+            int res = -1;
             if (UserName.Text == "")
             {
                 var i = new MessageDialog("Please enter your username!").ShowAsync();
+                temp += "a";
                 return;
             }
             if (Password.Password == "")
             {
                 var i = new MessageDialog("Please enter your password!").ShowAsync();
+                temp += "a";
                 return;
             }
             if (Password.Password.Length < 8)
             {
                 var i = new MessageDialog("Your password must longer than 8 characters!").ShowAsync();
+                temp += "a";
                 return;
             }
             if (Phone.Text.Length != 11)
             {
+                temp += "a";
                 var i = new MessageDialog("Your phone must be 11 numbers!").ShowAsync();
                 return;
             }
             if (Email.Text == "")
             {
                 var i = new MessageDialog("Please enter your email!").ShowAsync();
+                temp += "a";
                 return;
             }
-            Frame.Navigate(typeof(UserPage));
-        }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-
-            if (rootFrame.CanGoBack)
+            if (temp == "")
             {
-                // Show UI in title bar if opted-in and in-app backstack is not empty.
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                    AppViewBackButtonVisibility.Visible;
+                res = ViewModel.AddUser(UserName.Text, Password.Password, Phone.Text, Email.Text);
             }
-            else
+            
+            if (res == 1)
             {
-                // Remove the UI from the title bar if in-app back stack is empty.
-                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                    AppViewBackButtonVisibility.Collapsed;
+                Frame.Navigate(typeof(UserPage), UserName.Text);
             }
         }
         

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -32,9 +35,42 @@ namespace Book_Management_System.Views
     /// </summary>
     public sealed partial class SignInPage : Page
     {
+        DataTransferManager dataTransferManager;
+
         public SignInPage()
         {
             this.InitializeComponent();
+            var viewTitleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
+            viewTitleBar.BackgroundColor = Windows.UI.Colors.CornflowerBlue;
+            viewTitleBar.ButtonBackgroundColor = Windows.UI.Colors.CornflowerBlue;
+            this.ViewModel = new ViewModels.ManagementViewModels();
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+           
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            dataTransferManager = DataTransferManager.GetForCurrentView();
+            dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
+        }
+
+        ViewModels.ManagementViewModels ViewModel { get; set; }
+
+        async void OnShareDateRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            var dp = args.Request.Data;
+            var deferral = args.Request.GetDeferral();
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/background.jpg"));
+            dp.Properties.Title = ViewModel.SelectedItem.title;
+            dp.Properties.Description = ViewModel.SelectedItem.description;
+            dp.SetStorageItems(new List<StorageFile> { photoFile });
+            deferral.Complete();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter.GetType() == typeof(ViewModels.ManagementViewModels))
+            {
+                this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
+            }
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
 
         private void signinButton_Click(object sender, RoutedEventArgs e)
@@ -46,6 +82,19 @@ namespace Book_Management_System.Views
             if (Password.Password == "")
             {
                 var i = new MessageDialog("Please enter your password").ShowAsync();
+            }
+
+            int a = 0;
+
+            a = ViewModel.login(UserName.Text, Password.Password);
+
+            if (a == 2)
+            {
+                Frame.Navigate(typeof(AdminPage), ViewModel);
+            }
+            else if (a == 1)
+            {
+                Frame.Navigate(typeof(UserPage), UserName.Text);
             }
 
         }
