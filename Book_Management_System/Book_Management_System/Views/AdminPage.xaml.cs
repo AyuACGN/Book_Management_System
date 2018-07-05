@@ -1,9 +1,11 @@
 ﻿using Book_Management_System.Models;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
@@ -43,6 +45,12 @@ namespace Book_Management_System.Views
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
+
+            ImageBrush imageBrush = new ImageBrush
+            {
+                ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/mainpage.png", UriKind.Absolute))
+            };
+            gd_backimage.Background = imageBrush;
         }
 
         ViewModels.ManagementViewModels ViewModel;
@@ -51,7 +59,7 @@ namespace Book_Management_System.Views
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(ViewModel.SelectedItem.imagepath));
             dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
@@ -103,7 +111,27 @@ namespace Book_Management_System.Views
 
         private void SearchBox_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
-            ViewModel.QueryBook(Search.QueryText);
+            var conn = new SQLiteConnection("BMS.db");
+            using (var statement = conn.Prepare("SELECT Name,Description,Date,ImagePath FROM BookItem WHERE Name = ?"))
+            {
+                statement.Bind(1, Search.QueryText);
+                StringBuilder str = new StringBuilder();
+                str.Length = 0;
+                while (SQLiteResult.ROW == statement.Step())
+                {
+                    str.Append((string)statement[0]);
+                    DateTime time = DateTime.Parse((string)statement[2]);
+                    this.ViewModel.SelectedItem = new Models.Book((string)statement[0], (string)statement[1], time, (string)statement[3]);
+                }
+                if (str.Length == 0)
+                {
+                    var i = new MessageDialog("No this book!").ShowAsync();
+                }
+                else
+                {
+                    Frame.Navigate(typeof(BookPage), this.ViewModel);
+                }
+            }
         }
 
         private void ManageRequest_Click(object sender, RoutedEventArgs e)

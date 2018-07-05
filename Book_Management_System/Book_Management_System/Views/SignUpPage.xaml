@@ -18,7 +18,7 @@
             <TextBlock x:Name="Title" HorizontalAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" RenderTransformOrigin="5.134,0.437">Sing Up</TextBlock>
         </RelativePanel>
 
-        <Grid Grid.Row="1" VerticalAlignment="Center">
+        <Grid Grid.Row="1" Margin="0, 100, 0, 0">
             <ScrollViewer>
                 <StackPanel>
                     <TextBox x:Name="UserName" Width="350" Header="User Name" Margin="0,12,0,0" PlaceholderText="Enter your username" TextChanged="UserName_TextChanged"/>
@@ -29,7 +29,7 @@
                     <TextBlock x:Name="phone_status" Margin="10" HorizontalAlignment="Center" />
                     <TextBox x:Name="Email" Width="350" Margin="0, 12, 0, 0" Header="Email" PlaceholderText="Enter your email" TextChanged="Email_TextChanged" />
                     <TextBlock x:Name="email_status" Margin="10" HorizontalAlignment="Center" />
-                    <RelativePanel Width="350">
+                    <RelativePanel Width="350" Margin="20">
                         <Button x:Name="signupButton" Content="signup " Width="80" Margin="0, 0, 0, 0" Click="signupButton_Click"/>
                         <Button x:Name="returnButton" Content="return " Width="80" Margin="270, 0, 0, 0" Click="returnButton_Click"/>
                     </RelativePanel>
