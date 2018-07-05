@@ -66,6 +66,10 @@ namespace Book_Management_System.Views
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            UserName.Text = "";
+            Password.Password = "";
+            UserName.PlaceholderText = "Entern your username";
+            Password.PlaceholderText = "Entern your password";
             if (e.Parameter.GetType() == typeof(ViewModels.ManagementViewModels))
             {
                 this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
@@ -108,7 +112,8 @@ namespace Book_Management_System.Views
             }
             else if (a == 1)
             {
-                Frame.Navigate(typeof(UserPage), UserName.Text);
+                ViewModel.User = UserName.Text;
+                Frame.Navigate(typeof(UserPage), ViewModel);
             }
         }
 

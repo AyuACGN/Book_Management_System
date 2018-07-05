@@ -34,6 +34,13 @@ namespace Book_Management_System.ViewModels
 
         private Models.Book selectedItem = default(Models.Book);
         private SQLiteConnection conn;
+        private string user;
+
+        public string User
+        {
+            get { return user; }
+            set { user = value; }
+        }
 
         public Models.Book SelectedItem { get { return selectedItem; } set { this.selectedItem = value; } }
 
@@ -181,7 +188,7 @@ namespace Book_Management_System.ViewModels
                     userItem.Bind(4, phone);
                     userItem.Bind(5, email);
                     userItem.Step();
-                    var i = new MessageDialog("Success!").ShowAsync();
+                    var i = new MessageDialog("Sign up success!").ShowAsync();
                     return 1;
                 }
             }
@@ -199,7 +206,6 @@ namespace Book_Management_System.ViewModels
             newOne = new Models.Book(name, description, a, imagePath);
             this.allbooks.Add(newOne);
             
-
             using (var statement = conn.Prepare("SELECT Id FROM BookItem WHERE Name = ?"))
             {
                 statement.Bind(1, name);
@@ -340,8 +346,17 @@ namespace Book_Management_System.ViewModels
                 sss.Bind(2, bookname);
                 if (SQLiteResult.ROW == sss.Step())
                 {
-                    var i = new MessageDialog("You have borrowed this book!").ShowAsync();
-                    return;
+                    int status;
+                    using (var s = conn.Prepare("SELECT Status FROM BookItem WHERE Name = ?"))
+                    {
+                        s.Bind(1, bookname);
+                        s.Step();
+                        status = int.Parse((string)s[0]);
+                    }
+                    if (status == 0) {
+                        var i = new MessageDialog("You have borrowed this book!").ShowAsync();
+                        return;
+                    }
                 }
             }
             using (var sss = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
@@ -400,7 +415,7 @@ namespace Book_Management_System.ViewModels
                 sss.Bind(1, bookname);
                 if (SQLiteResult.ROW != sss.Step())
                 {
-                    var i = new MessageDialog("There is no theis book!").ShowAsync();
+                    var i = new MessageDialog("There is no this book!").ShowAsync();
                     return;
                 }
             }

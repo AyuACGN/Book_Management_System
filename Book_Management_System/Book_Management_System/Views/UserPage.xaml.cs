@@ -50,11 +50,13 @@ namespace Book_Management_System.Views
             viewTitleBar.BackgroundColor = Windows.UI.Colors.CornflowerBlue;
             viewTitleBar.ButtonBackgroundColor = Windows.UI.Colors.CornflowerBlue;
 
+            this.ViewModel = new ViewModels.ManagementViewModels();
+
             dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
         }
 
-        private ViewModels.ManagementViewModels ViewModel;
+        private ViewModels.ManagementViewModels ViewModel { get; set; }
 
         async void OnShareDateRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
@@ -69,42 +71,42 @@ namespace Book_Management_System.Views
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            user = (string)e.Parameter;
+            if (e.Parameter.GetType() == typeof(ViewModels.ManagementViewModels))
+            {
+                this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
+            }
+            user = ViewModel.User;
             Title.Text = ("Welcome " + user + "!");
         }
 
-        private void Search_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
+        private void SearchBox_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
-            var conn = new SQLiteConnection("BMSS.db");
-            using (var statement = conn.Prepare("SELECT Title,Description,Date,BookNumber FROM BookItem WHERE Title = ?"))
+            var conn = new SQLiteConnection("BMS.db");
+            using (var statement = conn.Prepare("SELECT Name,Description,Date,ImagePath FROM BookItem WHERE Name = ?"))
             {
                 statement.Bind(1, Search.QueryText);
                 StringBuilder str = new StringBuilder();
                 str.Length = 0;
                 while (SQLiteResult.ROW == statement.Step())
                 {
-                    str.Append("Title:");
                     str.Append((string)statement[0]);
-                    str.Append("  Description:");
-                    str.Append((string)statement[1]);
-                    str.Append("  Book Number:");
-                    str.Append((string)statement[3]);
-                    str.Append("\n");
+                    DateTime time = DateTime.Parse((string)statement[2]);
+                    this.ViewModel.SelectedItem = new Models.Book((string)statement[0], (string)statement[1], time, (string)statement[3]);
                 }
                 if (str.Length == 0)
                 {
-                    var i = new MessageDialog("No result!").ShowAsync();
+                    var i = new MessageDialog("No this book!").ShowAsync();
                 }
                 else
                 {
-                    var i = new MessageDialog(str.ToString()).ShowAsync();
+                    Frame.Navigate(typeof(BookPage), this.ViewModel);
                 }
             }
         }
 
         private void searchHis_Click(object sender, RoutedEventArgs e)
         {
-            var conn = new SQLiteConnection("BMSS.db");
+            var conn = new SQLiteConnection("BMS.db");
             using (var statement = conn.Prepare("SELECT BookName,Date FROM ReturnHistory WHERE UserName = ?"))
             {
                 statement.Bind(1, user);
@@ -122,6 +124,7 @@ namespace Book_Management_System.Views
                 str.Append("\n\n\n");
                 his.Text = str.ToString();
             }
+
             using (var statement = conn.Prepare("SELECT BookName,Date FROM BorrowHistory WHERE UserName = ?"))
             {
                 statement.Bind(1, user);
