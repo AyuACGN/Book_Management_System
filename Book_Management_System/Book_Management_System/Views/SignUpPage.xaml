@@ -14,7 +14,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <RelativePanel HorizontalAlignment="Center" Grid.Row="0">
+        <RelativePanel Margin="0, 100, 0, 0" HorizontalAlignment="Center" Grid.Row="0">
             <TextBlock x:Name="Title" HorizontalAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" RenderTransformOrigin="5.134,0.437">Sing Up</TextBlock>
         </RelativePanel>
 

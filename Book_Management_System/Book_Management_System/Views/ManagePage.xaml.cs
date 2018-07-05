@@ -62,12 +62,14 @@ namespace Book_Management_System.Views
         private void borrowButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.borrowBook(BookName.Text, UserName.Text, date.Date.DateTime);
+            Frame.Navigate(typeof(AdminPage), ViewModel);
 
         }
 
         private void returnButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.returnBook(BookName.Text, UserName.Text, date.Date.DateTime);
+            Frame.Navigate(typeof(AdminPage), ViewModel);
         }
     }
 }

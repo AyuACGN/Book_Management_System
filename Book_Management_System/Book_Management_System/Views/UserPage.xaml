@@ -8,24 +8,27 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Margin="0, 70, 0, 0" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <RelativePanel Grid.Row="0">
+        <RelativePanel Grid.Row="0" >
             <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
-            <SearchBox x:Name="Search" Width="200" Height="40" RelativePanel.AlignRightWithPanel="True" Margin="0,18,10,0" QuerySubmitted="Search_QuerySubmitted" />
         </RelativePanel>
+
+        <Grid Width="200" Height="80" HorizontalAlignment="Right" Margin="0, 100, 50, 0">
+            <SearchBox x:Name="Search" Width="200" Height="40"  QuerySubmitted="SearchBox_QuerySubmitted" />
+        </Grid>
 
         <RelativePanel Grid.Row="1">
             <TextBlock x:Name="his" Width="500" Height="350" RelativePanel.AlignHorizontalCenterWithPanel="True" ></TextBlock>
         </RelativePanel>
 
-        <RelativePanel Grid.Row="2" Width="350" Margin="0,24,0,0">
-            <Button x:Name="searchHis" Content="History" HorizontalAlignment="Left" Width="63" Click="searchHis_Click"/>
+        <RelativePanel Grid.Row="2" Width="350" Margin="0, 100, 0, 100">
+            <Button x:Name="searchHis" Content="History" HorizontalAlignment="Left" Click="searchHis_Click"/>
             <Button x:Name="modify" Content="modify" RelativePanel.AlignRightWithPanel="True" Click="modify_Click"/>
         </RelativePanel>
     </Grid>

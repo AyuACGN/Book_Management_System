@@ -8,7 +8,23 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
+        <TextBlock HorizontalAlignment="Center" Margin="0, 100, 0, 0" x:Name="textBlock" Text="Book detail view" Grid.Row="0" Style="{StaticResource HeaderTextBlockStyle}"/>
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+                <Image  x:Name="pic" Source="Assets/background.jpg" Width="350" Height="180" Stretch="UniformToFill"/>
+                <TextBox x:Name="title" IsReadOnly="True" Width="350" Header="Book Name" Margin="0,12,0,0" />
+                <TextBox x:Name="description" IsReadOnly="True" Width="350" Height="96" Margin="0,12,0,0" Header="Description" />
+                <DatePicker x:Name="date" IsEnabled="False" Width="350" Margin="0,12,0,0" Header="Due Date" HorizontalAlignment="Center" />
+                <RelativePanel Width="350" Margin="0,24,0,0">
+                    <Button x:Name="returnButton" Content="Return" RelativePanel.AlignRightWithPanel="True" Click="returnButton_Click"/>
+                </RelativePanel>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

@@ -15,10 +15,10 @@
         </Grid.RowDefinitions>
 
         <RelativePanel HorizontalAlignment="Center" Grid.Row="0">
-            <TextBlock x:Name="Title" HorizontalAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" RenderTransformOrigin="5.134,0.437">Sing In</TextBlock>
+            <TextBlock x:Name="Title" Margin="0, 100, 0, 0" HorizontalAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" RenderTransformOrigin="5.134,0.437">Sing In</TextBlock>
         </RelativePanel>
 
-        <Grid Grid.Row="1" VerticalAlignment="Center">
+        <Grid Grid.Row="1" Margin="0, 200, 0, 0">
             <ScrollViewer>
                 <StackPanel>
                     <TextBox x:Name="UserName" Width="350" Header="User Name" PlaceholderText="Entern your username" Margin="0,12,0,0" />

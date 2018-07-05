@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLitePCL;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
@@ -29,6 +31,42 @@ namespace Book_Management_System.Views
         public BookPage()
         {
             this.InitializeComponent();
+        }
+
+        ViewModels.ManagementViewModels ViewModel { get; set; }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter.GetType() == typeof(ViewModels.ManagementViewModels))
+            {
+                this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
+            }
+            if (ViewModel.SelectedItem != null)
+            {
+                title.Text = ViewModel.SelectedItem.name;
+                description.Text = ViewModel.SelectedItem.description;
+                date.Date = ViewModel.SelectedItem.datetime;
+                pic.Source = new BitmapImage(new Uri(ViewModel.SelectedItem.imagepath));
+                var conn = new SQLiteConnection("BMS.db");
+                using (var statement = conn.Prepare("SELECT Name,Description,Date,ImagePath FROM BookItem WHERE Name = ?"))
+                {
+                    statement.Bind(1, title.Text);
+                    statement.Step();
+                    title.Text = (string)statement[0];
+                    description.Text = (string)statement[1];
+                    pic.Source = new BitmapImage(new Uri((string)statement[3]));
+                    date.Date = Convert.ToDateTime((string)statement[2]).Date;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        public void returnButton_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(UserPage), this.ViewModel);
         }
     }
 }
