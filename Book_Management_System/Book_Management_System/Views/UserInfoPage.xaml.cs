@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using Book_Management_System.ViewModels;
 using Book_Management_System.Models;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Media.Imaging;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -33,11 +34,10 @@ namespace Book_Management_System.Views
     /// </summary>
     public sealed partial class UserInfoPage : Page
     {
-        DataTransferManager dataTransferManager;
 
         User user = new User("", "", "", "");
 
-        string username = "";
+        private ViewModels.ManagementViewModels ViewModel { get; set; }
 
         public UserInfoPage()
         {
@@ -45,37 +45,27 @@ namespace Book_Management_System.Views
             var viewTitleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
             viewTitleBar.BackgroundColor = Windows.UI.Colors.CornflowerBlue;
             viewTitleBar.ButtonBackgroundColor = Windows.UI.Colors.CornflowerBlue;
-
-            dataTransferManager = DataTransferManager.GetForCurrentView();
-            dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
-
+            
             UserName.PlaceholderText = "Original username: " + user.username;
             Password.PlaceholderText = "Enter your new password";
             Phone.PlaceholderText = "Original phone: " + user.phone;
             Email.PlaceholderText = "Original email: " + user.email;
+
+            ImageBrush imageBrush = new ImageBrush
+            {
+                ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/mainpage.png", UriKind.Absolute))
+            };
+            gd_.Background = imageBrush;
         }
-
-        private ViewModels.ManagementViewModels ViewModel;
-
-        async void OnShareDateRequested(DataTransferManager sender, DataRequestedEventArgs args)
-        {
-            var dp = args.Request.Data;
-            var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
-            dp.Properties.Title = ViewModel.SelectedItem.name;
-            dp.Properties.Description = ViewModel.SelectedItem.description;
-            dp.SetStorageItems(new List<StorageFile> { photoFile });
-            deferral.Complete();
-        }
-
+        
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            username = (string)e.Parameter;
-            UserName.Text = username;
+            ViewModel = (ViewModels.ManagementViewModels)e.Parameter;
+            UserName.Text = ViewModel.User;
             var conn = new SQLiteConnection("BMS.db");
             using (var statement = conn.Prepare("SELECT Password,Phone,Email FROM UserList WHERE Name = ?"))
             {
-                statement.Bind(1, username);
+                statement.Bind(1, ViewModel.User);
                 statement.Step();
                 Password.Password = (string)statement[0];
                 Phone.Text = (string)statement[1];
@@ -98,7 +88,7 @@ namespace Book_Management_System.Views
             }
         }
 
-        public void modifyButton_Click(object sender, RoutedEventArgs e)
+        public void ModifyButton_Click(object sender, RoutedEventArgs e)
         {
             if (UserName.Text == "")
             {
@@ -132,10 +122,10 @@ namespace Book_Management_System.Views
                 statement.Bind(1, Password.Password);
                 statement.Bind(2, Phone.Text);
                 statement.Bind(3, Email.Text);
-                statement.Bind(4, username);
+                statement.Bind(4, ViewModel.User);
                 statement.Step();
                 var i = new MessageDialog("Success!").ShowAsync();
-                Frame.Navigate(typeof(UserPage), username);
+                Frame.Navigate(typeof(UserPage), ViewModel);
             }
         }
 

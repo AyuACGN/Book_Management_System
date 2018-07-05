@@ -48,8 +48,10 @@ namespace Book_Management_System
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
 
 
-            ImageBrush imageBrush = new ImageBrush();
-            imageBrush.ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/wallhaven-588148.png", UriKind.Absolute));
+            ImageBrush imageBrush = new ImageBrush
+            {
+                ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/mainpage.png", UriKind.Absolute))
+            };
             gd_backimage.Background = imageBrush;
         }
 
@@ -59,19 +61,19 @@ namespace Book_Management_System
         {
             var dp = args.Request.Data;
             var deferral = args.Request.GetDeferral();
-            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/wallhaven-588148.png"));
+            var photoFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/mainpage.png"));
             dp.Properties.Title = ViewModel.SelectedItem.name;
             dp.Properties.Description = ViewModel.SelectedItem.description;
             dp.SetStorageItems(new List<StorageFile> { photoFile });
             deferral.Complete();
         }
 
-        private void signupButton_Click(object sender, RoutedEventArgs e)
+        private void SignupButton_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(SignUpPage), ViewModel);
         }
 
-        private void signinButton_Click(object sender, RoutedEventArgs e)
+        private void SigninButton_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(SignInPage), ViewModel);
         }

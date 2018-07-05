@@ -354,7 +354,7 @@ namespace Book_Management_System.ViewModels
                         status = int.Parse((string)s[0]);
                     }
                     if (status == 0) {
-                        var i = new MessageDialog("You have borrowed this book!").ShowAsync();
+                        var i = new MessageDialog(username + " have borrowed this book!").ShowAsync();
                         return;
                     }
                 }
@@ -433,7 +433,7 @@ namespace Book_Management_System.ViewModels
                         std.Bind(2, username);
                         if (SQLiteResult.ROW != std.Step())
                         {
-                            var i = new MessageDialog("You have not borrowed this book!").ShowAsync();
+                            var i = new MessageDialog(username + " have not borrowed this book!").ShowAsync();
                             return;
                         }
                         else
@@ -496,7 +496,7 @@ namespace Book_Management_System.ViewModels
                 }
             }
 
-            str.Append("ReturnHistory\n");
+            str.Append("\n\n\nReturnHistory\n");
 
             using (var statement = conn.Prepare("SELECT BookName,UserName,Date FROM ReturnHistory WHERE BookName = ?"))
             {

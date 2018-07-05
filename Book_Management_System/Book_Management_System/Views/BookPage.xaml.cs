@@ -31,6 +31,11 @@ namespace Book_Management_System.Views
         public BookPage()
         {
             this.InitializeComponent();
+            ImageBrush imageBrush = new ImageBrush
+            {
+                ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/mainpage.png", UriKind.Absolute))
+            };
+            gd_backimage.Background = imageBrush;
         }
 
         ViewModels.ManagementViewModels ViewModel { get; set; }

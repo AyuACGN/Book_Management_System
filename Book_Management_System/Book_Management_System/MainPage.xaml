@@ -18,16 +18,16 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <RelativePanel HorizontalAlignment="Center" Grid.Row="0">
+        <RelativePanel Margin="0, 100, 0, 0" HorizontalAlignment="Center" Grid.Row="0">
             <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}">Book Management System</TextBlock>
         </RelativePanel>
 
-        <Grid Grid.Row="1" VerticalAlignment="Center">
+        <Grid Grid.Row="1" Margin="250">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center" Width="280" Height="80" FontSize="40" Text=" START USING"></TextBlock>
-                <RelativePanel Width="350" Margin="0,24,0,0">
-                    <Button x:Name="signupButton" Content="signup" RelativePanel.AlignLeftWithPanel="True" Click="signupButton_Click"/>
-                    <Button x:Name="signinButton" Content="signin" RelativePanel.AlignRightWithPanel="True" Click="signinButton_Click"/>
+                <RelativePanel Width="350" Margin="0,66, 0,0">
+                    <Button FontSize="24" x:Name="signupButton" Content="signup" RelativePanel.AlignLeftWithPanel="True" Click="SignupButton_Click"/>
+                    <Button FontSize="24" x:Name="signinButton" Content="signin" RelativePanel.AlignRightWithPanel="True" Click="SigninButton_Click"/>
                 </RelativePanel>
             </StackPanel>
         </Grid>

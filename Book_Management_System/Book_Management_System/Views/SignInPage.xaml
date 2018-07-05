@@ -23,7 +23,7 @@
                 <StackPanel>
                     <TextBox x:Name="UserName" Width="350" Header="User Name" PlaceholderText="Entern your username" Margin="0,12,0,0" />
                     <PasswordBox x:Name="Password" Width="350" Margin="0,12,0,0" Header="Password" PlaceholderText="Enter your password" />
-                    <RelativePanel Margin="20, 20, 20, 20" Width="350">
+                    <RelativePanel Margin="20, 35, 20, 20" Width="350">
                         <Button x:Name="signinButton" Content="signin" Width="80" Margin="0, 0, 0, 0" Click="signinButton_Click"/>
                         <Button x:Name="returnButton" Content="return" Width="80" Margin="270, 0, 0, 0" Click="returnButton_Click"/>
                     </RelativePanel>

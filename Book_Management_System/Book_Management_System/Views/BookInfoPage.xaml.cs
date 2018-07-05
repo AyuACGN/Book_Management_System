@@ -46,6 +46,12 @@ namespace Book_Management_System.Views
 
             dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
+
+            ImageBrush imageBrush = new ImageBrush
+            {
+                ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/mainpage.png", UriKind.Absolute))
+            };
+            gd_backimage.Background = imageBrush;
         }
 
         ViewModels.ManagementViewModels ViewModel { get; set; }
@@ -86,11 +92,10 @@ namespace Book_Management_System.Views
                 }
 
                 path = this.ViewModel.SelectedItem.imagepath;
-
-                //var i = new MessageDialog("Welcome!").ShowAsync();
             }
             else
             {
+                pic.Source = new BitmapImage(new Uri("ms-appx:///Assets/Square150x150Logo.scale-200.png"));
                 createButton.Content = "Create";
             }
         }
