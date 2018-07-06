@@ -50,7 +50,7 @@ namespace Book_Management_System.Views
             var viewTitleBar = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TitleBar;
             viewTitleBar.BackgroundColor = Windows.UI.Colors.CornflowerBlue;
             viewTitleBar.ButtonBackgroundColor = Windows.UI.Colors.CornflowerBlue;
-
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
             this.ViewModel = new ViewModels.ManagementViewModels();
 
             dataTransferManager = DataTransferManager.GetForCurrentView();
@@ -84,6 +84,7 @@ namespace Book_Management_System.Views
             }
             user = ViewModel.User;
             Title.Text = ("Welcome " + user + "!");
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
         }
 
         private void SearchBox_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)

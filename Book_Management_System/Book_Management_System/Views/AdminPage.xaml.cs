@@ -43,6 +43,7 @@ namespace Book_Management_System.Views
             this.ViewModel = new ViewModels.ManagementViewModels();
             TileUpdateManager.CreateTileUpdaterForApplication().Clear();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+
             dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.OnShareDateRequested);
 
@@ -72,6 +73,7 @@ namespace Book_Management_System.Views
             {
                 this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
                 ViewModel.User = "admin";
+                Windows.UI.Core.SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = Windows.UI.Core.AppViewBackButtonVisibility.Collapsed;
             }
         }
 
