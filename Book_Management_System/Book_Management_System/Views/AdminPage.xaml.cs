@@ -71,6 +71,7 @@ namespace Book_Management_System.Views
             if (e.Parameter.GetType() == typeof(ViewModels.ManagementViewModels))
             {
                 this.ViewModel = (ViewModels.ManagementViewModels)(e.Parameter);
+                ViewModel.User = "admin";
             }
         }
 
