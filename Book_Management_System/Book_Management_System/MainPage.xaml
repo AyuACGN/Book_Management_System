@@ -22,10 +22,10 @@
             <TextBlock x:Name="Title" Style="{StaticResource HeaderTextBlockStyle}">Book Management System</TextBlock>
         </RelativePanel>
 
-        <Grid Grid.Row="1" Margin="250">
+        <Grid Margin="0, 350, 0, 0">
             <StackPanel>
                 <TextBlock HorizontalAlignment="Center" Width="280" Height="80" FontSize="40" Text=" START USING"></TextBlock>
-                <RelativePanel Width="350" Margin="0,66, 0,0">
+                <RelativePanel Margin="0, 100, 0, 0" Width="350" >
                     <Button FontSize="24" x:Name="signupButton" Content="signup" RelativePanel.AlignLeftWithPanel="True" Click="SignupButton_Click"/>
                     <Button FontSize="24" x:Name="signinButton" Content="signin" RelativePanel.AlignRightWithPanel="True" Click="SigninButton_Click"/>
                 </RelativePanel>
