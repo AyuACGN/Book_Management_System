@@ -71,7 +71,14 @@ namespace Book_Management_System.Views
 
         public void returnButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(UserPage), this.ViewModel);
+            if (this.ViewModel.User == "admin")
+            {
+                Frame.Navigate(typeof(AdminPage), this.ViewModel);
+            }
+            else
+            {
+                Frame.Navigate(typeof(UserPage), this.ViewModel);
+            }
         }
     }
 }

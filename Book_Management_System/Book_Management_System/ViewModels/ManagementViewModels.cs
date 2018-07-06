@@ -338,7 +338,7 @@ namespace Book_Management_System.ViewModels
             }
         } // 添加还书记录
 
-        public void borrowBook(string bookname, string username, DateTime a)
+        public bool borrowBook(string bookname, string username, DateTime a)
         {
             using (var sss = conn.Prepare("SELECT UserName FROM BorrowHistory WHERE UserName = ? AND BookName = ?"))
             {
@@ -355,7 +355,7 @@ namespace Book_Management_System.ViewModels
                     }
                     if (status == 0) {
                         var i = new MessageDialog(username + " have borrowed this book!").ShowAsync();
-                        return;
+                        return false;
                     }
                 }
             }
@@ -365,7 +365,7 @@ namespace Book_Management_System.ViewModels
                 if (SQLiteResult.ROW != sss.Step())
                 {
                     var i = new MessageDialog("No this user!").ShowAsync();
-                    return;
+                    return false;
                 }
             }
             using (var statement = conn.Prepare("SELECT Name,Description,Date,Status FROM BookItem WHERE Name = ?"))
@@ -389,6 +389,7 @@ namespace Book_Management_System.ViewModels
                             sta.Bind(2, bookname);
                             sta.Step();
                         }
+                        return true;
                     }
                 }
                 else
@@ -396,9 +397,10 @@ namespace Book_Management_System.ViewModels
                     var i = new MessageDialog("There is no this book").ShowAsync();
                 }
             }
+            return false;
         } // 完整借书流程
 
-        public void returnBook(string bookname, string username, DateTime a)
+        public bool returnBook(string bookname, string username, DateTime a)
         {
             using (var sss = conn.Prepare("SELECT Name FROM UserList WHERE Name = ?"))
             {
@@ -406,7 +408,7 @@ namespace Book_Management_System.ViewModels
                 if (SQLiteResult.ROW != sss.Step())
                 {
                     var i = new MessageDialog("No this user!").ShowAsync();
-                    return;
+                    return false;
                 }
             }
 
@@ -416,7 +418,7 @@ namespace Book_Management_System.ViewModels
                 if (SQLiteResult.ROW != sss.Step())
                 {
                     var i = new MessageDialog("There is no this book!").ShowAsync();
-                    return;
+                    return false;
                 }
             }
 
@@ -434,7 +436,7 @@ namespace Book_Management_System.ViewModels
                         if (SQLiteResult.ROW != std.Step())
                         {
                             var i = new MessageDialog(username + " have not borrowed this book!").ShowAsync();
-                            return;
+                            return false;
                         }
                         else
                         {
@@ -457,6 +459,7 @@ namespace Book_Management_System.ViewModels
                                             sta.Bind(2, bookname);
                                             sta.Step();
                                         }
+                                        return true;
                                     }
                                 }
                             }
@@ -464,6 +467,7 @@ namespace Book_Management_System.ViewModels
                     }
                 }
             }
+            return false;
         } // 完整还书流程
 
         public string AdminHistory(string bookname)

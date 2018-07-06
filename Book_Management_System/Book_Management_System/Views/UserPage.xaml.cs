@@ -157,7 +157,9 @@ namespace Book_Management_System.Views
 
         private void logout_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(MainPage), null);
+            ViewModel.User = "";
+            ViewModel.SelectedItem = null;
+            this.Frame.Navigate(typeof(MainPage), ViewModel);
         }
     }
 }

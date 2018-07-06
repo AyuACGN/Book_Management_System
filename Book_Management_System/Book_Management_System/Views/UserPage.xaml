@@ -8,6 +8,14 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.BottomAppBar>
+        <CommandBar IsSticky="True">
+            <AppBarButton x:Name="modifyinfo" Icon="Bookmarks" Label="Modify" Click="modify_Click" />
+            <AppBarButton x:Name="findhistory" Icon="Send" Label="History" Click="searchHis_Click" />
+            <AppBarButton x:Name="logout" Icon="Stop" Label="LogOut" Click="logout_Click" />
+        </CommandBar>
+    </Page.BottomAppBar>
+
     <Grid x:Name="gd_" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -31,5 +39,7 @@
             <Button x:Name="searchHis" Content="History" HorizontalAlignment="Left" Click="searchHis_Click"/>
             <Button x:Name="modify" Content="modify" RelativePanel.AlignRightWithPanel="True" Click="modify_Click"/>
         </RelativePanel>
+        
+        
     </Grid>
 </Page>

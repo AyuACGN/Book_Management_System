@@ -68,15 +68,29 @@ namespace Book_Management_System.Views
 
         private void borrowButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.borrowBook(BookName.Text, UserName.Text, date.Date.DateTime);
-            Frame.Navigate(typeof(AdminPage), ViewModel);
+            bool success = ViewModel.borrowBook(BookName.Text, UserName.Text, date.Date.DateTime);
+            if (success)
+            {
+                Frame.Navigate(typeof(AdminPage), ViewModel);
+            } else
+            {
+                UserName.Text = "";
+                BookName.Text = "";
+            }
 
         }
 
         private void returnButton_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.returnBook(BookName.Text, UserName.Text, date.Date.DateTime);
-            Frame.Navigate(typeof(AdminPage), ViewModel);
+            bool success = ViewModel.returnBook(BookName.Text, UserName.Text, date.Date.DateTime);
+            if (success)
+            {
+                Frame.Navigate(typeof(AdminPage), ViewModel);
+            } else
+            {
+                UserName.Text = "";
+                BookName.Text = "";
+            }
         }
     }
 }

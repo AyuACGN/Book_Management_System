@@ -141,7 +141,8 @@ namespace Book_Management_System.Views
             
             if (res == 1)
             {
-                Frame.Navigate(typeof(UserPage), UserName.Text);
+                ViewModel.User = UserName.Text;
+                Frame.Navigate(typeof(UserPage), ViewModel);
             }
         }
 
